@@ -1,0 +1,19 @@
+image: "python:3.8"
+
+before_script:
+  - python --version
+  - pip install pipenv
+  - pipenv sync --dev
+
+stages:
+  - Static Analysis
+
+flake8:
+  stage: Static Analysis
+  script:
+  - pipenv run flake8 --config=setup.cfg
+
+black:
+  stage: Static Analysis
+  script:
+  - pipenv run black --check --config pyproject.toml
