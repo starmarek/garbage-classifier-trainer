@@ -11,9 +11,9 @@ stages:
 flake8:
   stage: Static Analysis
   script:
-  - pipenv run flake8 --config=setup.cfg
+    - pipenv run flake8 --config=setup.cfg
 
 black:
   stage: Static Analysis
   script:
-  - pipenv run black --check --config pyproject.toml
+    - pipenv run black . --check --config pyproject.toml
