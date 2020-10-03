@@ -1,21 +1,20 @@
 from src.data_loader import DataLoader
 from src.model import ConvolutionModel
 from src.trainer import ModelTrainer
-
-# from utils.config import process_config
-# from utils.dirs import create_dirs
-# from utils.utils import get_args
+from src.utils.config import process_config
+from src.utils.dirs import create_dirs
+from src.utils.args import get_args
 
 
 def main():
     # capture the config path from the run arguments
     # then process the json configuration file
-    # try:
-    #     args = get_args()
-    #     config = process_config(args.config)
-    # except:
-    #     print("missing or invalid arguments")
-    #     exit(0)
+    try:
+        args = get_args()
+        config = process_config(args.config)
+    except:
+        print("missing or invalid arguments")
+        exit(0)
 
     # create the experiments dirs
     create_dirs([config.callbacks.tensorboard_log_dir, config.callbacks.checkpoint_dir])

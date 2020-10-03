@@ -12,6 +12,7 @@ tensorflow = "*"
 keras = "*"
 numpy = "*"
 matplotlib = "*"
+dotmap = "*"
 
 [requires]
 python_version = "3.8"
