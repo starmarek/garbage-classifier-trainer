@@ -25,7 +25,10 @@ def main():
 
         print("Create the trainer")
         trainer = importer.get_class(config.trainer.name)(
-            model.model, data_loader.get_train_data(), config
+            model.model,
+            data_loader.get_train_data(),
+            data_loader.get_test_data(),
+            config,
         )
 
         print("Start training the model.")
