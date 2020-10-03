@@ -12,7 +12,7 @@ def main():
     try:
         args = get_args()
         config = process_config(args.config)
-    except:
+    except Exception:
         print("missing or invalid arguments")
         exit(0)
 
