@@ -1,0 +1,28 @@
+{
+  "exp": {
+    "name": "basic_conv"
+  },
+  "data_loader": {
+    "name": "data_loader.DataLoader"
+  },
+  "model": {
+    "name": "model.ConvolutionModel",
+    "learning_rate": 0.001,
+    "optimizer": "adadelta"
+  },
+  "trainer": {
+    "name": "trainer.ModelTrainer",
+    "num_epochs": 20,
+    "batch_size": 64,
+    "validation_split": 0.25,
+    "verbose_training": true
+  },
+  "callbacks": {
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": true,
+    "checkpoint_save_weights_only": true,
+    "checkpoint_verbose": true,
+    "tensorboard_write_graph": true
+  }
+}
