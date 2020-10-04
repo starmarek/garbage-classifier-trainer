@@ -8,6 +8,9 @@ from keras.layers import (
     BatchNormalization,
 )
 from keras.constraints import maxnorm
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ConvolutionModel:
@@ -20,18 +23,18 @@ class ConvolutionModel:
         if self.model is None:
             raise Exception("You have to build the model first.")
 
-        print("Saving model...")
+        logger.debug("Saving model...")
         self.model.save_weights(checkpoint_path)
-        print("Model saved")
+        logger.debug("Model saved")
 
     # load latest checkpoint from the experiment path defined in the config file
     def load(self, checkpoint_path):
         if self.model is None:
             raise Exception("You have to build the model first.")
 
-        print("Loading model checkpoint {} ...\n".format(checkpoint_path))
+        logger.debug("Loading model checkpoint {} ...\n".format(checkpoint_path))
         self.model.load_weights(checkpoint_path)
-        print("Model loaded")
+        logger.debug("Model loaded")
 
     def build_model(self):
         self.model = Sequential()
