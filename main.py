@@ -26,20 +26,20 @@ def main():
 
     logger.debug("Create data generator")
     data_loader = importer.get_class(config.data_loader.name)(config)
+    data_loader.plot_some_files_from_train_ds()
 
-    logger.debug("Create model")
-    model = importer.get_class(config.model.name)(config)
+    # logger.debug("Create model")
+    # model = importer.get_class(config.model.name)(config)
 
-    logger.debug("Create trainer")
-    trainer = importer.get_class(config.trainer.name)(
-        model.model,
-        data_loader.get_train_data(),
-        data_loader.get_test_data(),
-        config,
-    )
+    # logger.debug("Create trainer")
+    # trainer = importer.get_class(config.trainer.name)(
+    #     model.model,
+    #     data_loader.get_data(),
+    #     config,
+    # )
 
-    logger.debug("Start training the model.")
-    trainer.train()
+    # logger.debug("Start training the model.")
+    # trainer.train()
 
 
 if __name__ == "__main__":

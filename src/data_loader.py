@@ -1,28 +1,50 @@
-from keras.datasets import cifar10
-from keras.utils import to_categorical
+# from keras.utils import to_categorical
+import tensorflow as tf
+import logging
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+logger = logging.getLogger(__name__)
 
 
 class DataLoader:
     def __init__(self, config):
         self.config = config
-        (self.X_train, self.y_train), (self.X_test, self.y_test) = cifar10.load_data()
 
-        self.y_train_one_hot, self.y_test_one_hot = self.one_hot_encode_labels(
-            y_train=self.y_train, y_test=self.y_test
+        logger.debug("Creating training dataset")
+        train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+            "dataset",
+            validation_split=0.2,
+            subset="training",
+            seed=np.random.randint(1e6),
+            image_size=(self.config.image_size.x, self.config.image_size.y),
+            batch_size=self.config.batch_size,
         )
 
-        self.X_train, self.X_test = self.normalize_pixels(
-            X_train=self.X_train, X_test=self.X_test
+        logger.debug("Creating validation dataset")
+        val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+            "dataset",
+            validation_split=0.2,
+            subset="validation",
+            seed=np.random.randint(1e6),
+            image_size=(self.config.image_size.x, self.config.image_size.y),
+            batch_size=self.config.batch_size,
         )
 
-    def get_train_data(self):
-        return self.X_train, self.y_train_one_hot
+        # prevent I/O blocking - prefetch next batch
+        self.train_ds = train_ds.prefetch(buffer_size=self.config.batch_size)
+        self.val_ds = val_ds.prefetch(buffer_size=self.config.batch_size)
 
-    def get_test_data(self):
-        return self.X_test, self.y_test_one_hot
+    def get_data(self):
+        return self.train_ds, self.val_ds
 
-    def one_hot_encode_labels(self, y_train, y_test):
-        return to_categorical(y_train), to_categorical(y_test)
-
-    def normalize_pixels(self, X_train, X_test):
-        return (X_train / 255), (X_test / 255)
+    def plot_some_files_from_train_ds(self):
+        plt.figure(figsize=(10, 10))
+        for images, labels in self.train_ds.take(1):
+            for i in range(9):
+                plt.subplot(3, 3, i + 1)
+                plt.imshow(images[i].numpy().astype("uint8"))
+                plt.title(int(labels[i]))
+                plt.axis("off")
+        plt.show()

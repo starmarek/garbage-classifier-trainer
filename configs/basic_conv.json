@@ -12,10 +12,7 @@
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
-    "num_epochs": 25,
-    "batch_size": 64,
-    "validation_split": 0.25,
-    "verbose_training": true
+    "num_epochs": 25
   },
   "callbacks": {
     "checkpoint_monitor": "val_loss",
@@ -24,5 +21,10 @@
     "checkpoint_save_weights_only": true,
     "checkpoint_verbose": true,
     "tensorboard_write_graph": true
-  }
+  },
+  "image_size": {
+      "x": 180,
+      "y": 180 
+  },
+  "batch_size": 32
 }
