@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # experiments data
-experiments/
+logs/
 
 #datasets
 dataset/

@@ -40,7 +40,12 @@ class ConvolutionModel:
         self.model = Sequential()
 
         self.model.add(
-            Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=(32, 32, 3))
+            Conv2D(
+                32,
+                kernel_size=(3, 3),
+                activation="relu",
+                input_shape=(self.config.image_size.x, self.config.image_size.y, 3),
+            )
         )
         self.model.add(Dropout(0.2))
         self.model.add(BatchNormalization())
@@ -70,7 +75,7 @@ class ConvolutionModel:
         self.model.add(Dropout(0.2))
         self.model.add(BatchNormalization())
 
-        self.model.add(Dense(10, activation="softmax"))
+        self.model.add(Dense(5, activation="softmax"))
 
         self.model.compile(
             loss="categorical_crossentropy",

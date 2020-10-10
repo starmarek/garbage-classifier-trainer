@@ -16,7 +16,7 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG,
+    level=logging.INFO,
 )
 
 
