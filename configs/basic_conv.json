@@ -3,15 +3,11 @@
     "name": "basic_conv"
   },
   "data_loader": {
-    "name": "data_loader.DataLoader"
   },
   "model": {
-    "name": "model.ConvolutionModel",
-    "learning_rate": 0.001,
     "optimizer": "adam"
   },
   "trainer": {
-    "name": "trainer.ModelTrainer",
     "num_epochs": 25
   },
   "callbacks": {

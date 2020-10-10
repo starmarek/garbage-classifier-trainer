@@ -1,7 +1,10 @@
 from src.utils.config import process_config
 from src.utils.dirs import create_dirs
 from src.utils.args import get_args
-from src.utils import importer
+from src.data_loader import DataLoader
+from src.model import ConvolutionModel
+from src.trainer import ModelTrainer
+
 import logging
 import os
 
@@ -25,21 +28,20 @@ def main():
     create_dirs([config.callbacks.tensorboard_log_dir, config.callbacks.checkpoint_dir])
 
     logger.debug("Create data generator")
-    data_loader = importer.get_class(config.data_loader.name)(config)
-    data_loader.plot_some_files_from_train_ds()
+    data_loader = DataLoader(config)
 
-    # logger.debug("Create model")
-    # model = importer.get_class(config.model.name)(config)
+    logger.debug("Create model")
+    model = ConvolutionModel(config)
 
-    # logger.debug("Create trainer")
-    # trainer = importer.get_class(config.trainer.name)(
-    #     model.model,
-    #     data_loader.get_datagens(),
-    #     config,
-    # )
+    logger.debug("Create trainer")
+    trainer = ModelTrainer(
+        model.model,
+        data_loader.get_datagens(),
+        config,
+    )
 
-    # logger.debug("Start training the model.")
-    # trainer.train()
+    logger.debug("Start training the model.")
+    trainer.train()
 
 
 if __name__ == "__main__":
