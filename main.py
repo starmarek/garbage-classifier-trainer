@@ -34,7 +34,7 @@ def main():
     # logger.debug("Create trainer")
     # trainer = importer.get_class(config.trainer.name)(
     #     model.model,
-    #     data_loader.get_data(),
+    #     data_loader.get_datagens(),
     #     config,
     # )
 

@@ -1,8 +1,7 @@
-# from keras.utils import to_categorical
-import tensorflow as tf
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
+from keras.preprocessing.image import ImageDataGenerator
 
 
 logger = logging.getLogger(__name__)
@@ -11,40 +10,58 @@ logger = logging.getLogger(__name__)
 class DataLoader:
     def __init__(self, config):
         self.config = config
+        self.seed = np.random.randint(1e6)
 
-        logger.debug("Creating training dataset")
-        train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-            "dataset",
+        self.create_datagens()
+
+    def create_datagens(self):
+        training_ds_generator = ImageDataGenerator(
+            rescale=1.0 / 255,
+            shear_range=0.2,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            rotation_range=40,
             validation_split=0.2,
+        )
+        validation_ds_generator = ImageDataGenerator(
+            rescale=1.0 / 255,
+            validation_split=0.2,
+        )
+
+        self.train_generator = training_ds_generator.flow_from_directory(
+            "dataset",
+            seed=self.seed,
+            target_size=(
+                self.config.image_size.x,
+                self.config.image_size.y,
+            ),
+            batch_size=self.config.batch_size,
+            shuffle=True,
             subset="training",
-            seed=np.random.randint(1e6),
-            image_size=(self.config.image_size.x, self.config.image_size.y),
-            batch_size=self.config.batch_size,
         )
 
-        logger.debug("Creating validation dataset")
-        val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+        self.validation_generator = validation_ds_generator.flow_from_directory(
             "dataset",
-            validation_split=0.2,
-            subset="validation",
-            seed=np.random.randint(1e6),
-            image_size=(self.config.image_size.x, self.config.image_size.y),
+            seed=self.seed,
+            target_size=(
+                self.config.image_size.x,
+                self.config.image_size.y,
+            ),
             batch_size=self.config.batch_size,
+            shuffle=True,
+            subset="validation",
         )
 
-        # prevent I/O blocking - prefetch next batch
-        self.train_ds = train_ds.prefetch(buffer_size=self.config.batch_size)
-        self.val_ds = val_ds.prefetch(buffer_size=self.config.batch_size)
-
-    def get_data(self):
-        return self.train_ds, self.val_ds
+    def get_datagens(self):
+        return self.train_generator, self.validation_generator
 
     def plot_some_files_from_train_ds(self):
         plt.figure(figsize=(10, 10))
-        for images, labels in self.train_ds.take(1):
+        for (img, label) in self.train_generator:
             for i in range(9):
                 plt.subplot(3, 3, i + 1)
-                plt.imshow(images[i].numpy().astype("uint8"))
-                plt.title(int(labels[i]))
+                plt.title(label[i])
                 plt.axis("off")
+                plt.imshow(img[0 + i, :, :, ::])
+            break
         plt.show()

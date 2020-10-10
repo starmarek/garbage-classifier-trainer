@@ -3,10 +3,10 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 class ModelTrainer:
-    def __init__(self, model, data, config):
+    def __init__(self, model, data_gens, config):
         self.model = model
-        self.training_data = data[0]
-        self.validation_data = data[1]
+        self.training_generator = data_gens[0]
+        self.validation_generator = data_gens[1]
         self.config = config
         self.callbacks = []
         self.loss = []
@@ -39,8 +39,8 @@ class ModelTrainer:
 
     def train(self):
         history = self.model.fit(
-            self.training_data,
-            validation_data=self.validation_data,
+            self.training_generator,
+            validation_data=self.validation_generator,
             epochs=self.config.trainer.num_epochs,
             batch_size=self.config.batch_size,
             callbacks=self.callbacks,
