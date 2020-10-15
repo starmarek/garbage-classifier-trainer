@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class DataLoader:
-    def __init__(self, config):
+    def __init__(self, config, img_size):
         self.config = config
+        self.img_size = img_size
         self.seed = np.random.randint(1e6)
 
         self.create_datagens()
@@ -29,11 +30,11 @@ class DataLoader:
         )
 
         self.train_generator = training_ds_generator.flow_from_directory(
-            "dataset",
+            "dataset/train",
             seed=self.seed,
             target_size=(
-                self.config.image_size.x,
-                self.config.image_size.y,
+                self.img_size,
+                self.img_size,
             ),
             batch_size=self.config.batch_size,
             shuffle=True,
@@ -41,11 +42,11 @@ class DataLoader:
         )
 
         self.validation_generator = validation_ds_generator.flow_from_directory(
-            "dataset",
+            "dataset/train",
             seed=self.seed,
             target_size=(
-                self.config.image_size.x,
-                self.config.image_size.y,
+                self.img_size,
+                self.img_size,
             ),
             batch_size=self.config.batch_size,
             shuffle=True,

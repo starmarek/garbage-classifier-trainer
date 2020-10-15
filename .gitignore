@@ -105,6 +105,7 @@ venv.bak/
 
 # experiments data
 logs/
+models/
 
 #datasets
 dataset/

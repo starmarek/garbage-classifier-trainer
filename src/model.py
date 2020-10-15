@@ -1,21 +1,34 @@
 from keras.models import Sequential
 from keras.layers import (
     Dense,
-    Conv2D,
-    MaxPooling2D,
     Dropout,
     Flatten,
-    BatchNormalization,
 )
-from keras.constraints import maxnorm
+import keras.optimizers as opt
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class ConvolutionModel:
-    def __init__(self, config):
+    def __init__(
+        self,
+        config,
+        model_imgsize,
+        dense_num,
+        node_num,
+    ):
+        self.model_imgsize = model_imgsize
+        self.dense_num = dense_num
+        self.node_num = node_num
         self.config = config
+        self.model_name = (
+            "VGG16"
+            if self.model_imgsize[1] == 224
+            else "Xception"
+            if self.model_imgsize[1] == 229
+            else "InceptionV3"
+        )
         self.build_model()
 
     # save function that saves the checkpoint in the path defined in the config file
@@ -37,48 +50,28 @@ class ConvolutionModel:
         logger.debug("Model loaded")
 
     def build_model(self):
-        self.model = Sequential()
-
-        self.model.add(
-            Conv2D(
-                32,
-                kernel_size=(3, 3),
-                activation="relu",
-                input_shape=(self.config.image_size.x, self.config.image_size.y, 3),
-            )
+        base_model = self.model_imgsize[0](
+            input_shape=(self.model_imgsize[1], self.model_imgsize[1], 3),
+            include_top=False,
+            weights="imagenet",
         )
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
+        for layer in base_model.layers:
+            layer.trainable = False
 
-        self.model.add(Conv2D(64, kernel_size=(3, 3), activation="relu"))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-
-        self.model.add(Conv2D(64, (3, 3), activation="relu"))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-
-        self.model.add(Conv2D(128, (3, 3), activation="relu"))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-
+        self.model = Sequential()
+        self.model.add(base_model)
         self.model.add(Flatten())
-        self.model.add(Dropout(0.2))
-
-        self.model.add(Dense(256, activation="relu", kernel_constraint=maxnorm(3)))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-
-        self.model.add(Dense(128, activation="relu", kernel_constraint=maxnorm(3)))
-        self.model.add(Dropout(0.2))
-        self.model.add(BatchNormalization())
-
+        for i in range(self.dense_num - 1):
+            self.model.add(Dense(self.node_num, activation="relu"))
+        self.model.add(Dropout(0.5))
         self.model.add(Dense(5, activation="softmax"))
 
         self.model.compile(
             loss="categorical_crossentropy",
-            optimizer=self.config.model.optimizer,
+            optimizer=opt.Adam(
+                learning_rate=0.001,
+            ),
             metrics=["accuracy"],
         )
+
+        self.name = f"{self.model_name}_{self.dense_num}_{self.node_num}"

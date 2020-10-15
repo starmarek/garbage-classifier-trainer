@@ -1,11 +1,12 @@
 import os
-from keras.callbacks import ModelCheckpoint, TensorBoard
+from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
 import time
 
 
 class ModelTrainer:
     def __init__(self, model, data_gens, config):
-        self.model = model
+        self.model = model.model
+        self.model_name = model.name
         self.training_generator = data_gens[0]
         self.validation_generator = data_gens[1]
         self.config = config
@@ -13,34 +14,34 @@ class ModelTrainer:
         self.init_callbacks()
 
     def init_callbacks(self):
-        # self.callbacks.append(
-        #     ModelCheckpoint(
-        #         filepath=os.path.join(
-        #             self.config.callbacks.checkpoint_dir,
-        #             "%s-{epoch:02d}-{val_loss:.2f}.hdf5" % self.config.exp.name,
-        #         ),
-        #         monitor=self.config.callbacks.checkpoint_monitor,
-        #         mode=self.config.callbacks.checkpoint_mode,
-        #         save_best_only=self.config.callbacks.checkpoint_save_best_only,
-        #         save_weights_only=self.config.callbacks.checkpoint_save_weights_only,
-        #         verbose=self.config.callbacks.checkpoint_verbose,
-        #     )
-        # )
-
         self.callbacks.append(
-            TensorBoard(
-                log_dir="logs/{}-conv-{}-nodes-{}-dense-{}".format(
-                    5, 3, 5, int(time.time())
-                )
+            ModelCheckpoint(
+                "models/"
+                + self.model_name
+                + "--{epoch:02d}--{val_loss:.2f}--{val_accuracy:.2f}.hdf5",
+                monitor="val_accuracy",
+                verbose=1,
+                save_best_only=True,
+                save_weights_only=False,
+                mode="auto",
+                period=1,
             )
         )
+        self.callbacks.append(
+            EarlyStopping(monitor="val_accuracy", patience=15, verbose=1, mode="auto")
+        )
+
+        self.callbacks.append(TensorBoard(log_dir="logs/{}".format(self.model_name)))
 
     def train(self):
         self.model.fit(
             self.training_generator,
             validation_data=self.validation_generator,
             epochs=self.config.trainer.num_epochs,
-            batch_size=self.config.batch_size,
+            steps_per_epoch=self.training_generator.samples
+            / self.training_generator.batch_size,
+            validation_steps=self.validation_generator.samples
+            / self.validation_generator.batch_size,
             callbacks=self.callbacks,
             use_multiprocessing=True,
             workers=16,
