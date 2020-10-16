@@ -1,15 +1,13 @@
-import os
 from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
-import time
 
 
 class ModelTrainer:
-    def __init__(self, model, data_gens, config):
+    def __init__(self, model, data_gens, num_epochs):
         self.model = model.model
         self.model_name = model.name_for_callbacks
         self.training_generator = data_gens[0]
         self.validation_generator = data_gens[1]
-        self.config = config
+        self.num_epochs = num_epochs
         self.callbacks = []
         self.init_callbacks()
 
@@ -37,7 +35,7 @@ class ModelTrainer:
         self.model.fit(
             self.training_generator,
             validation_data=self.validation_generator,
-            epochs=self.config.trainer.num_epochs,
+            epochs=self.num_epochs,
             steps_per_epoch=self.training_generator.samples
             / self.training_generator.batch_size,
             validation_steps=self.validation_generator.samples

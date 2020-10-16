@@ -1,26 +1,4 @@
 {
-  "exp": {
-    "name": "basic_conv"
-  },
-  "data_loader": {
-  },
-  "model": {
-    "optimizer": "adam"
-  },
-  "trainer": {
-    "num_epochs": 35
-  },
-  "callbacks": {
-    "checkpoint_monitor": "val_loss",
-    "checkpoint_mode": "min",
-    "checkpoint_save_best_only": true,
-    "checkpoint_save_weights_only": true,
-    "checkpoint_verbose": true,
-    "tensorboard_write_graph": true
-  },
-  "image_size": {
-      "x": 299,
-      "y": 299 
-  },
-  "batch_size": 10
+    "num_epochs": 35,
+    "batch_size": 10
 }

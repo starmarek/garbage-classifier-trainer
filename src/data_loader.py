@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class DataLoader:
-    def __init__(self, config, img_size):
-        self.config = config
+    def __init__(self, batch_size, img_size):
+        self.batch_size = batch_size
         self.img_size = img_size
         self.seed = np.random.randint(1e6)
 
@@ -36,7 +36,7 @@ class DataLoader:
                 self.img_size,
                 self.img_size,
             ),
-            batch_size=self.config.batch_size,
+            batch_size=self.batch_size,
             shuffle=True,
             subset="training",
         )
@@ -48,7 +48,7 @@ class DataLoader:
                 self.img_size,
                 self.img_size,
             ),
-            batch_size=self.config.batch_size,
+            batch_size=self.batch_size,
             shuffle=True,
             subset="validation",
         )

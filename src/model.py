@@ -4,7 +4,6 @@ from keras.layers import (
     Dropout,
     Flatten,
 )
-import keras.optimizers as opt
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,6 +16,8 @@ class ConvolutionModel:
         image_size,
         dense_layers_quantity,
         dl_neurons_quantity,
+        optimizer,
+        learning_rate,
     ):
         self.model_structure = model_structure
         self.dense_layers_quantity = dense_layers_quantity
@@ -28,6 +29,8 @@ class ConvolutionModel:
             + f"{self.dense_layers_quantity}_"
             + f"{self.dl_neurons_quantity}"
         )
+        self.optimizer = optimizer
+        self.learning_rate = learning_rate
 
         logger.debug("Building model")
         self.build_model()
@@ -67,8 +70,8 @@ class ConvolutionModel:
 
         self.model.compile(
             loss="categorical_crossentropy",
-            optimizer=opt.Adam(
-                learning_rate=0.001,
+            optimizer=self.optimizer(
+                learning_rate=self.learning_rate,
             ),
             metrics=["accuracy"],
         )
