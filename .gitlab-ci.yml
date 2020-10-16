@@ -1,19 +1,34 @@
 image: "python:3.8"
 
+stages:
+  - build
+  - test
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  WORKON_HOME: "$CI_PROJECT_DIR/venv"
+
 before_script:
   - python --version
   - pip install pipenv
-  - pipenv sync --dev
 
-stages:
-  - Static Analysis
+build:
+  stage: build
+  script:
+    - apt update -yqq
+    - apt install -yqq libpq-dev
+    - env VIRTUALENV_COPIES=1 pipenv sync --dev
+  artifacts:
+    paths:
+      - .cache/pip
+      - venv/
 
 flake8:
-  stage: Static Analysis
+  stage: test
   script:
     - pipenv run flake8 --config=setup.cfg
 
 black:
-  stage: Static Analysis
+  stage: test
   script:
     - pipenv run black . --check --config pyproject.toml
