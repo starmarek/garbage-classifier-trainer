@@ -6,7 +6,7 @@ import time
 class ModelTrainer:
     def __init__(self, model, data_gens, config):
         self.model = model.model
-        self.model_name = model.name
+        self.model_name = model.name_for_callbacks
         self.training_generator = data_gens[0]
         self.validation_generator = data_gens[1]
         self.config = config

@@ -6,6 +6,7 @@ from src.trainer import ModelTrainer
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.xception import Xception
 from tensorflow.keras.applications.inception_v3 import InceptionV3
+from src.decorators import first_step
 
 import logging
 import os
@@ -20,38 +21,39 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
+args = get_args()
+config = process_config(args.config)
 
 
-def main():
-    models = [[VGG16, 224], [Xception, 299], [InceptionV3, 150]]
-    dense_layers = [0, 1, 2, 3]
-    node_nums = [512, 1024, 2048, 4096]
-    args = get_args()
-    config = process_config(args.config)
+@first_step([[InceptionV3, 150]], [1, 2, 3], [512, 1024, 2048, 4096])
+def tweaking_pipeline(
+    model_structure,
+    image_size,
+    dense_layers_quantity,
+    dl_neuron_quantity,
+):
 
-    for pre_trained_model in models:
-        for dense_layer in dense_layers:
-            for node_num in node_nums:
-                logger.debug("Create data generator")
-                data_loader = DataLoader(config, pre_trained_model[1])
+    logger.debug("Create data generator")
+    data_loader = DataLoader(config, image_size)
 
-                logger.debug("Create model")
-                model = ConvolutionModel(
-                    config, pre_trained_model, dense_layer, node_num
-                )
+    logger.debug("Create model")
+    model = ConvolutionModel(
+        model_structure,
+        image_size,
+        dense_layers_quantity,
+        dl_neuron_quantity,
+    )
 
-                logger.debug("Create trainer")
-                trainer = ModelTrainer(
-                    model,
-                    data_loader.get_datagens(),
-                    config,
-                )
+    logger.debug("Create trainer")
+    trainer = ModelTrainer(
+        model,
+        data_loader.get_datagens(),
+        config,
+    )
 
-                logger.debug("Start training the model.")
-                trainer.train()
-                if dense_layer == 0:
-                    break
+    logger.debug("Start training the model.")
+    trainer.train()
 
 
 if __name__ == "__main__":
-    main()
+    tweaking_pipeline()
