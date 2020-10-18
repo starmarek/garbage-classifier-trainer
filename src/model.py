@@ -52,22 +52,6 @@ class ConvolutionModel:
         elif mode == 'tune':
             self.recompile_model()
 
-    # def save(self, checkpoint_path):
-    #     if self.model is None:
-    #         raise Exception("You have to build the model first.")
-
-    #     logger.debug("Saving model...")
-    #     self.model.save_weights(checkpoint_path)
-    #     logger.debug("Model saved")
-
-    # def load(self, checkpoint_path):
-    #     if self.model is None:
-    #         raise Exception("You have to build the model first.")
-
-    #     logger.debug("Loading model checkpoint {} ...\n".format(checkpoint_path))
-    #     self.model.load_weights(checkpoint_path)
-    #     logger.debug("Model loaded")
-
     def build_model(self):
         base_model = self.model_structure(
             input_shape=(self.image_size, self.image_size, 3),
@@ -75,21 +59,13 @@ class ConvolutionModel:
             weights="imagenet",
         )
         base_model.trainable = False
-        inputs = keras.Input(shape=(299, 299, 3))
-        x = base_model(inputs, training=False)
-        x = GlobalAveragePooling2D()(x)
-        x = Dense(self.dl_neurons_quantity, activation="relu")(x)
-        x = keras.layers.Dropout(0.2)(x)  # Regularize with dropout
-        outputs = keras.layers.Dense(5, activation="softmax")(x)
-        self.model = keras.Model(inputs, outputs)
-        # self.model = Sequential()
-        # self.model.add(base_model)
-        # self.model.add(GlobalAveragePooling2D())
-        # # self.model.add(Flatten())
-        # # for i in range(self.dense_layers_quantity):
-        # #     self.model.add(Dense(self.dl_neurons_quantity, activation="relu"))
-        # self.model.add(Dropout(0.2))
-        # self.model.add(Dense(5, activation="softmax"))
+        self.model = Sequential()
+        self.model.add(base_model)
+        self.model.add(GlobalAveragePooling2D())
+        for i in range(self.dense_layers_quantity):
+            self.model.add(Dense(self.dl_neurons_quantity, activation="relu"))
+        self.model.add(Dropout(0.2))
+        self.model.add(Dense(5, activation="softmax"))
 
         self.model.compile(
             loss="categorical_crossentropy",
