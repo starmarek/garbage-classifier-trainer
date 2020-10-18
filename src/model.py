@@ -30,7 +30,7 @@ class ConvolutionModel:
         if self.dense_layers_quantity == 0:
             self.name_for_callbacks = (
                 f"{self.model_structure_name}_"
-                + f"{self.dense_layers_quantity}"
+                + f"{self.dense_layers_quantity}_"
                 + f"{optimizer.__name__}_"
                 + f"{learning_rate}_"
                 + f"{mode}"

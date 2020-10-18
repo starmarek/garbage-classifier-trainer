@@ -30,14 +30,14 @@ args = get_args()
 config = process_config(args.config)
 
 
-@first_step([[Xception, 299]], [1], [1024])
+@first_step([[Xception, 299]], [0], [1024])
 def tweaking_pipeline(
     model_structure,
     image_size,
     dense_layers_quantity,
     dl_neuron_quantity,
     optimizer=opt.RMSprop,
-    learning_rate=0.001,
+    learning_rate=1e-3,
 ):
     ## initial
     data_loader = DataLoader(config.batch_size, image_size)
@@ -80,6 +80,7 @@ def tweaking_pipeline(
         data_loader.get_datagens(),
         config.tune_num_epochs,
     )
+    model = trainer.train()
 
 if __name__ == "__main__":
     tweaking_pipeline()
