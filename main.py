@@ -10,11 +10,9 @@ from tensorflow.keras.applications.xception import Xception
 # from tensorflow.keras.applications.inception_v3 import InceptionV3
 from src.decorators import first_step
 import keras.optimizers as opt
-from keras.models import load_model
 
 import logging
 import os
-import keras
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -39,7 +37,7 @@ def tweaking_pipeline(
     optimizer=opt.RMSprop,
     learning_rate=1e-3,
 ):
-    ## initial
+    # initial
     data_loader = DataLoader(config.batch_size, image_size)
     model_instance = ConvolutionModel(
         model_structure,
@@ -59,8 +57,8 @@ def tweaking_pipeline(
     )
     model = trainer.train()
 
-    ## tune
-    learning_rate=1e-5
+    # tune
+    learning_rate = 1e-5
     data_loader = DataLoader(config.batch_size, image_size)
     model_instance = ConvolutionModel(
         model_structure,
@@ -69,7 +67,7 @@ def tweaking_pipeline(
         dl_neuron_quantity,
         optimizer,
         learning_rate,
-        mode='tune',
+        mode="tune",
         model_to_recompile=model,
     )
     model = model_instance.get_model()
@@ -81,6 +79,7 @@ def tweaking_pipeline(
         config.tune_num_epochs,
     )
     model = trainer.train()
+
 
 if __name__ == "__main__":
     tweaking_pipeline()

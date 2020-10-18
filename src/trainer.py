@@ -44,5 +44,5 @@ class ModelTrainer:
             use_multiprocessing=True,
             workers=16,
         )
-        
+
         return self.model

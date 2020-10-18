@@ -1,12 +1,9 @@
-from keras.models import Sequential, Model
+from keras.models import Sequential
 from keras.layers import (
     Dense,
     Dropout,
-    Flatten,
     GlobalAveragePooling2D,
 )
-import keras
-
 
 
 class ConvolutionModel:
@@ -18,10 +15,10 @@ class ConvolutionModel:
         dl_neurons_quantity,
         optimizer,
         learning_rate,
-        mode='initial',
+        mode="initial",
         model_to_recompile=None,
     ):
-        assert mode == 'initial' or 'tune', 'Please, choose proper mode.'
+        assert mode == "initial" or "tune", "Please, choose proper mode."
         self.model_structure = model_structure
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity
@@ -47,9 +44,9 @@ class ConvolutionModel:
         self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.model_to_recompile = model_to_recompile
-        if mode == 'initial':
+        if mode == "initial":
             self.build_model()
-        elif mode == 'tune':
+        elif mode == "tune":
             self.recompile_model()
 
     def build_model(self):

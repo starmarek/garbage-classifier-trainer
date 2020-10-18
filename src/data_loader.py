@@ -5,7 +5,6 @@ from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.xception import preprocess_input
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -24,12 +23,10 @@ class DataLoader:
             horizontal_flip=True,
             rotation_range=40,
             validation_split=0.2,
-            preprocessing_function=preprocess_input
-            
+            preprocessing_function=preprocess_input,
         )
         validation_ds_generator = ImageDataGenerator(
-            validation_split=0.2,
-            preprocessing_function=preprocess_input
+            validation_split=0.2, preprocessing_function=preprocess_input
         )
 
         self.train_generator = training_ds_generator.flow_from_directory(
