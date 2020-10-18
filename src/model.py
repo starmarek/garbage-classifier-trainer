@@ -73,6 +73,7 @@ class ConvolutionModel:
         )
 
     def get_model(self):
+        self.model.summary()
         return self.model
 
     def recompile_model(self):
