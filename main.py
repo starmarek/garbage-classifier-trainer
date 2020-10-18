@@ -5,13 +5,16 @@ from src.model import ConvolutionModel
 from src.trainer import ModelTrainer
 
 # from tensorflow.keras.applications.vgg16 import VGG16
-# from tensorflow.keras.applications.xception import Xception
-from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.applications.xception import Xception
+
+# from tensorflow.keras.applications.inception_v3 import InceptionV3
 from src.decorators import first_step
 import keras.optimizers as opt
+from keras.models import load_model
 
 import logging
 import os
+import keras
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -27,21 +30,18 @@ args = get_args()
 config = process_config(args.config)
 
 
-@first_step([[InceptionV3, 150]], [1, 2, 3], [512, 1024, 2048, 4096])
+@first_step([[Xception, 299]], [1], [1024])
 def tweaking_pipeline(
     model_structure,
     image_size,
     dense_layers_quantity,
     dl_neuron_quantity,
-    optimizer=opt.Adam,
+    optimizer=opt.RMSprop,
     learning_rate=0.001,
 ):
-
-    logger.debug("Create data generator")
+    ## initial
     data_loader = DataLoader(config.batch_size, image_size)
-
-    logger.debug("Create model")
-    model = ConvolutionModel(
+    model_instance = ConvolutionModel(
         model_structure,
         image_size,
         dense_layers_quantity,
@@ -49,17 +49,37 @@ def tweaking_pipeline(
         optimizer,
         learning_rate,
     )
-
-    logger.debug("Create trainer")
+    model = model_instance.get_model()
+    model_name = model_instance.name_for_callbacks
     trainer = ModelTrainer(
+        model_name,
         model,
         data_loader.get_datagens(),
-        config.num_epochs,
+        config.initial_num_epochs,
     )
+    model = trainer.train()
 
-    logger.debug("Start training the model.")
-    trainer.train()
-
+    ## tune
+    learning_rate=1e-5
+    data_loader = DataLoader(config.batch_size, image_size)
+    model_instance = ConvolutionModel(
+        model_structure,
+        image_size,
+        dense_layers_quantity,
+        dl_neuron_quantity,
+        optimizer,
+        learning_rate,
+        mode='tune',
+        model_to_recompile=model,
+    )
+    model = model_instance.get_model()
+    model_name = model_instance.name_for_callbacks
+    trainer = ModelTrainer(
+        model_name,
+        model,
+        data_loader.get_datagens(),
+        config.tune_num_epochs,
+    )
 
 if __name__ == "__main__":
     tweaking_pipeline()

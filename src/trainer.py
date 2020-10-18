@@ -2,9 +2,9 @@ from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
 
 
 class ModelTrainer:
-    def __init__(self, model, data_gens, num_epochs):
-        self.model = model.model
-        self.model_name = model.name_for_callbacks
+    def __init__(self, model_name, model, data_gens, num_epochs):
+        self.model = model
+        self.model_name = model_name
         self.training_generator = data_gens[0]
         self.validation_generator = data_gens[1]
         self.num_epochs = num_epochs
@@ -44,3 +44,5 @@ class ModelTrainer:
             use_multiprocessing=True,
             workers=16,
         )
+        
+        return self.model

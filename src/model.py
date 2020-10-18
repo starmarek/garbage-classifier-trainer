@@ -1,12 +1,12 @@
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras.layers import (
     Dense,
     Dropout,
     Flatten,
+    GlobalAveragePooling2D,
 )
-import logging
+import keras
 
-logger = logging.getLogger(__name__)
 
 
 class ConvolutionModel:
@@ -18,38 +18,55 @@ class ConvolutionModel:
         dl_neurons_quantity,
         optimizer,
         learning_rate,
+        mode='initial',
+        model_to_recompile=None,
     ):
+        assert mode == 'initial' or 'tune', 'Please, choose proper mode.'
         self.model_structure = model_structure
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity
         self.image_size = image_size
-        self.model_structure_name = model_structure.__name__
-        self.name_for_callbacks = (
-            f"{self.model_structure_name}_"
-            + f"{self.dense_layers_quantity}_"
-            + f"{self.dl_neurons_quantity}"
-        )
+        self.model_structure_name = self.model_structure.__name__
+        if self.dense_layers_quantity == 0:
+            self.name_for_callbacks = (
+                f"{self.model_structure_name}_"
+                + f"{self.dense_layers_quantity}"
+                + f"{optimizer.__name__}_"
+                + f"{learning_rate}_"
+                + f"{mode}"
+            )
+        else:
+            self.name_for_callbacks = (
+                f"{self.model_structure_name}_"
+                + f"{self.dense_layers_quantity}_"
+                + f"{self.dl_neurons_quantity}_"
+                + f"{optimizer.__name__}_"
+                + f"{learning_rate}_"
+                + f"{mode}"
+            )
         self.optimizer = optimizer
         self.learning_rate = learning_rate
+        self.model_to_recompile = model_to_recompile
+        if mode == 'initial':
+            self.build_model()
+        elif mode == 'tune':
+            self.recompile_model()
 
-        logger.debug("Building model")
-        self.build_model()
+    # def save(self, checkpoint_path):
+    #     if self.model is None:
+    #         raise Exception("You have to build the model first.")
 
-    def save(self, checkpoint_path):
-        if self.model is None:
-            raise Exception("You have to build the model first.")
+    #     logger.debug("Saving model...")
+    #     self.model.save_weights(checkpoint_path)
+    #     logger.debug("Model saved")
 
-        logger.debug("Saving model...")
-        self.model.save_weights(checkpoint_path)
-        logger.debug("Model saved")
+    # def load(self, checkpoint_path):
+    #     if self.model is None:
+    #         raise Exception("You have to build the model first.")
 
-    def load(self, checkpoint_path):
-        if self.model is None:
-            raise Exception("You have to build the model first.")
-
-        logger.debug("Loading model checkpoint {} ...\n".format(checkpoint_path))
-        self.model.load_weights(checkpoint_path)
-        logger.debug("Model loaded")
+    #     logger.debug("Loading model checkpoint {} ...\n".format(checkpoint_path))
+    #     self.model.load_weights(checkpoint_path)
+    #     logger.debug("Model loaded")
 
     def build_model(self):
         base_model = self.model_structure(
@@ -57,16 +74,22 @@ class ConvolutionModel:
             include_top=False,
             weights="imagenet",
         )
-        for layer in base_model.layers:
-            layer.trainable = False
-
-        self.model = Sequential()
-        self.model.add(base_model)
-        self.model.add(Flatten())
-        for i in range(self.dense_layers_quantity):
-            self.model.add(Dense(self.dl_neurons_quantity, activation="relu"))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(5, activation="softmax"))
+        base_model.trainable = False
+        inputs = keras.Input(shape=(299, 299, 3))
+        x = base_model(inputs, training=False)
+        x = GlobalAveragePooling2D()(x)
+        x = Dense(self.dl_neurons_quantity, activation="relu")(x)
+        x = keras.layers.Dropout(0.2)(x)  # Regularize with dropout
+        outputs = keras.layers.Dense(5, activation="softmax")(x)
+        self.model = keras.Model(inputs, outputs)
+        # self.model = Sequential()
+        # self.model.add(base_model)
+        # self.model.add(GlobalAveragePooling2D())
+        # # self.model.add(Flatten())
+        # # for i in range(self.dense_layers_quantity):
+        # #     self.model.add(Dense(self.dl_neurons_quantity, activation="relu"))
+        # self.model.add(Dropout(0.2))
+        # self.model.add(Dense(5, activation="softmax"))
 
         self.model.compile(
             loss="categorical_crossentropy",
@@ -75,3 +98,17 @@ class ConvolutionModel:
             ),
             metrics=["accuracy"],
         )
+
+    def get_model(self):
+        return self.model
+
+    def recompile_model(self):
+        self.model_to_recompile.trainable = True
+        self.model_to_recompile.compile(
+            loss="categorical_crossentropy",
+            optimizer=self.optimizer(
+                learning_rate=self.learning_rate,
+            ),
+            metrics=["accuracy"],
+        )
+        self.model = self.model_to_recompile
