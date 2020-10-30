@@ -1,18 +1,16 @@
 import logging
 import os
 
-import keras.optimizers as opt
 import fire
-
+import keras.optimizers as opt
+from tensorflow import keras
 from tensorflow.keras.applications.xception import Xception
 
-from src.data_loader import DataLoaderTraining, DataLoaderEvaluation
-
+from src.data_loader import DataLoaderEvaluation, DataLoaderTraining
 from src.decorators import tweaking_loop
 from src.model import ConvolutionModel
 from src.trainer import ModelTrainer
 from src.utils.config import process_config
-from tensorflow import keras
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -86,6 +84,14 @@ def evaluate():
     imported_model = keras.models.load_model(config.load_model_path)
     data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
     print(imported_model.evaluate(data))
+
+
+def predict():
+    imported_model = keras.models.load_model(config.load_model_path)
+    loader = DataLoaderEvaluation(config.batch_size, config.image_size, config.classes)
+    data = loader.get_datagen()
+    print(imported_model.predict_classes(data)[0])
+    loader.plot_some_files_from_train_ds()
 
 
 if __name__ == "__main__":

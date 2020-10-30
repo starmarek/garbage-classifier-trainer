@@ -9,9 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class DataLoaderEvaluation:
-    def __init__(self, batch_size, img_size):
+    def __init__(self, batch_size, img_size, classes=None):
         self.batch_size = batch_size
         self.img_size = img_size
+        self.classes = classes
         self.seed = np.random.randint(1e6)
 
         self.create_datagens()
@@ -33,6 +34,17 @@ class DataLoaderEvaluation:
 
     def get_datagen(self):
         return self.eval_generator
+
+    def plot_some_files_from_train_ds(self):
+        plt.figure(figsize=(10, 10))
+        for (img, label) in self.eval_generator:
+            for i in range(9):
+                plt.subplot(3, 3, i + 1)
+                plt.title(self.classes[np.argmax(label[i])])
+                plt.axis("off")
+                plt.imshow(img[0 + i, :, :, ::])
+            break
+        plt.show()
 
 
 class DataLoaderTraining:
@@ -82,14 +94,3 @@ class DataLoaderTraining:
 
     def get_datagens(self):
         return self.train_generator, self.validation_generator
-
-    def plot_some_files_from_train_ds(self):
-        plt.figure(figsize=(10, 10))
-        for (img, label) in self.train_generator:
-            for i in range(9):
-                plt.subplot(3, 3, i + 1)
-                plt.title(label[i])
-                plt.axis("off")
-                plt.imshow(img[0 + i, :, :, ::])
-            break
-        plt.show()
