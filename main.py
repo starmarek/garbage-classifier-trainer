@@ -1,18 +1,19 @@
-from src.utils.config import process_config
-from src.utils.args import get_args
-from src.data_loader import DataLoader
-from src.model import ConvolutionModel
-from src.trainer import ModelTrainer
+import logging
+import os
+
+import keras.optimizers as opt
 
 # from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.xception import Xception
 
-# from tensorflow.keras.applications.inception_v3 import InceptionV3
-from src.decorators import first_step
-import keras.optimizers as opt
+from src.data_loader import DataLoader
 
-import logging
-import os
+# from tensorflow.keras.applications.inception_v3 import InceptionV3
+from src.decorators import tweaking_loop
+from src.model import ConvolutionModel
+from src.trainer import ModelTrainer
+from src.utils.args import get_args
+from src.utils.config import process_config
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -28,13 +29,13 @@ args = get_args()
 config = process_config(args.config)
 
 
-@first_step([[Xception, 299]], [0], [1024])
+@tweaking_loop([[Xception, 299]], [opt.Adam], [0, 1], [1024])
 def tweaking_pipeline(
     model_structure,
     image_size,
     dense_layers_quantity,
     dl_neuron_quantity,
-    optimizer=opt.RMSprop,
+    optimizer,
     learning_rate=1e-3,
 ):
     # initial

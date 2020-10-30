@@ -1,9 +1,5 @@
+from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from keras.models import Sequential
-from keras.layers import (
-    Dense,
-    Dropout,
-    GlobalAveragePooling2D,
-)
 
 
 class ConvolutionModel:
@@ -59,9 +55,9 @@ class ConvolutionModel:
         self.model = Sequential()
         self.model.add(base_model)
         self.model.add(GlobalAveragePooling2D())
+        self.model.add(Dropout(0.15))
         for i in range(self.dense_layers_quantity):
             self.model.add(Dense(self.dl_neurons_quantity, activation="relu"))
-        self.model.add(Dropout(0.2))
         self.model.add(Dense(5, activation="softmax"))
 
         self.model.compile(

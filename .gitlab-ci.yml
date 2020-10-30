@@ -26,9 +26,14 @@ build:
 flake8:
   stage: test
   script:
-    - pipenv run flake8 --config=setup.cfg
+    - pipenv run flake8
 
 black:
   stage: test
   script:
-    - pipenv run black . --check --config pyproject.toml
+    - pipenv run black . --check
+
+isort:
+  stage: test
+  script:
+    - pipenv run isort . --check

@@ -1,4 +1,4 @@
-from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
 
 class ModelTrainer:

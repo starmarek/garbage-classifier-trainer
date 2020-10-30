@@ -1,9 +1,9 @@
 import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.xception import preprocess_input
-
 
 logger = logging.getLogger(__name__)
 
