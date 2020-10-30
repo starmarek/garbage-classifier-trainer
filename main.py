@@ -6,12 +6,13 @@ import fire
 
 from tensorflow.keras.applications.xception import Xception
 
-from src.data_loader import DataLoader
+from src.data_loader import DataLoaderTraining, DataLoaderEvaluation
 
 from src.decorators import tweaking_loop
 from src.model import ConvolutionModel
 from src.trainer import ModelTrainer
 from src.utils.config import process_config
+from tensorflow import keras
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -36,7 +37,7 @@ def tweaking(
     learning_rate=1e-3,
 ):
     # initial
-    data_loader = DataLoader(config.batch_size, image_size)
+    data_loader = DataLoaderTraining(config.batch_size, image_size)
     model_instance = ConvolutionModel(
         model_structure,
         image_size,
@@ -58,7 +59,7 @@ def tweaking(
 
     # tune
     learning_rate = 1e-5
-    data_loader = DataLoader(config.batch_size, image_size)
+    data_loader = DataLoaderTraining(config.batch_size, image_size)
     model_instance = ConvolutionModel(
         model_structure,
         image_size,
@@ -79,6 +80,12 @@ def tweaking(
         config.patience,
     )
     model = trainer.train()
+
+
+def evaluate():
+    imported_model = keras.models.load_model(config.load_model_path)
+    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
+    print(imported_model.evaluate(data))
 
 
 if __name__ == "__main__":

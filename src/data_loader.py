@@ -8,7 +8,34 @@ from tensorflow.keras.applications.xception import preprocess_input
 logger = logging.getLogger(__name__)
 
 
-class DataLoader:
+class DataLoaderEvaluation:
+    def __init__(self, batch_size, img_size):
+        self.batch_size = batch_size
+        self.img_size = img_size
+        self.seed = np.random.randint(1e6)
+
+        self.create_datagens()
+
+    def create_datagens(self):
+        evaluation_ds_generator = ImageDataGenerator(
+            preprocessing_function=preprocess_input
+        )
+
+        self.eval_generator = evaluation_ds_generator.flow_from_directory(
+            "dataset/test",
+            target_size=(
+                self.img_size,
+                self.img_size,
+            ),
+            batch_size=self.batch_size,
+            seed=self.seed,
+        )
+
+    def get_datagen(self):
+        return self.eval_generator
+
+
+class DataLoaderTraining:
     def __init__(self, batch_size, img_size):
         self.batch_size = batch_size
         self.img_size = img_size
