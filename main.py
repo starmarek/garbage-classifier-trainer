@@ -3,12 +3,10 @@ import os
 
 import keras.optimizers as opt
 
-# from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.xception import Xception
 
 from src.data_loader import DataLoader
 
-# from tensorflow.keras.applications.inception_v3 import InceptionV3
 from src.decorators import tweaking_loop
 from src.model import ConvolutionModel
 from src.trainer import ModelTrainer
@@ -55,6 +53,7 @@ def tweaking_pipeline(
         model,
         data_loader.get_datagens(),
         config.initial_num_epochs,
+        config.patience,
     )
     model = trainer.train()
 
@@ -78,6 +77,7 @@ def tweaking_pipeline(
         model,
         data_loader.get_datagens(),
         config.tune_num_epochs,
+        config.patience,
     )
     model = trainer.train()
 

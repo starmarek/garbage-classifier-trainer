@@ -2,13 +2,14 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
 
 class ModelTrainer:
-    def __init__(self, model_name, model, data_gens, num_epochs):
+    def __init__(self, model_name, model, data_gens, num_epochs, patience):
         self.model = model
         self.model_name = model_name
         self.training_generator = data_gens[0]
         self.validation_generator = data_gens[1]
         self.num_epochs = num_epochs
         self.callbacks = []
+        self.patience = patience
         self.init_callbacks()
 
     def init_callbacks(self):
@@ -26,7 +27,9 @@ class ModelTrainer:
             )
         )
         self.callbacks.append(
-            EarlyStopping(monitor="val_accuracy", patience=15, verbose=1, mode="auto")
+            EarlyStopping(
+                monitor="val_accuracy", patience=self.patience, verbose=1, mode="auto"
+            )
         )
 
         self.callbacks.append(TensorBoard(log_dir="logs/{}".format(self.model_name)))

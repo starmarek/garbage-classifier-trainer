@@ -1,5 +1,6 @@
 {
     "initial_num_epochs": 30,
     "tune_num_epochs": 50,
-    "batch_size": 16
+    "batch_size": 16,
+    "patience": 20
 }
