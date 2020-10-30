@@ -2,6 +2,7 @@ import logging
 import os
 
 import keras.optimizers as opt
+import fire
 
 from tensorflow.keras.applications.xception import Xception
 
@@ -10,7 +11,6 @@ from src.data_loader import DataLoader
 from src.decorators import tweaking_loop
 from src.model import ConvolutionModel
 from src.trainer import ModelTrainer
-from src.utils.args import get_args
 from src.utils.config import process_config
 
 # start workaround
@@ -23,17 +23,16 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
-args = get_args()
-config = process_config(args.config)
+config = process_config("configs/basic_conv.json")
 
 
-@tweaking_loop([[Xception, 299]], [opt.Adam], [0, 1], [1024])
-def tweaking_pipeline(
-    model_structure,
-    image_size,
-    dense_layers_quantity,
-    dl_neuron_quantity,
-    optimizer,
+@tweaking_loop([[Xception, 299]], [opt.Adam], [0], [1024])
+def tweaking(
+    model_structure=Xception,
+    image_size=299,
+    dense_layers_quantity=0,
+    dl_neuron_quantity=1024,
+    optimizer=opt.Adam,
     learning_rate=1e-3,
 ):
     # initial
@@ -83,4 +82,4 @@ def tweaking_pipeline(
 
 
 if __name__ == "__main__":
-    tweaking_pipeline()
+    fire.Fire()
