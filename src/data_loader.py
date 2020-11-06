@@ -1,6 +1,5 @@
 import logging
 
-import matplotlib.pyplot as plt
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications.xception import preprocess_input
@@ -8,96 +7,75 @@ from tensorflow.keras.applications.xception import preprocess_input
 logger = logging.getLogger(__name__)
 
 
-class DataLoaderEvaluation:
-    def __init__(self, batch_size, img_size, classes=None):
-        logger.info(f"Creating {type(self).__name__} class")
-
-        self.batch_size = batch_size
-        self.img_size = img_size
-        self.classes = classes
-        self.seed = np.random.randint(1e6)
-
-        logger.info("Creating data generators")
-        self.create_datagens()
-
-    def create_datagens(self):
-        evaluation_ds_generator = ImageDataGenerator(
-            preprocessing_function=preprocess_input
-        )
-
-        self.eval_generator = evaluation_ds_generator.flow_from_directory(
-            "dataset/test",
-            target_size=(
-                self.img_size,
-                self.img_size,
-            ),
-            batch_size=self.batch_size,
-            seed=self.seed,
-        )
-
-    def get_datagen(self):
-        logger.info("Getting data generator")
-        return self.eval_generator
-
-    def plot_some_files_from_train_ds(self):
-        logger.info("Start plotting files from data generator")
-        plt.figure(figsize=(10, 10))
-        for (img, label) in self.eval_generator:
-            for i in range(9):
-                plt.subplot(3, 3, i + 1)
-                plt.title(self.classes[np.argmax(label[i])])
-                plt.axis("off")
-                plt.imshow(img[0 + i, :, :, ::])
-            break
-        plt.show()
-
-
-class DataLoaderTraining:
+class DataLoader:
     def __init__(self, batch_size, img_size):
         logger.info(f"Creating {type(self).__name__} class")
 
         self.batch_size = batch_size
         self.img_size = img_size
+        self.preprocess_input = preprocess_input
         self.seed = np.random.randint(1e6)
 
-        self.create_datagens()
+    def create_datagen(self, dataset_dir, subset=None, **kwargs):
+        if subset is not None:
+            assert (
+                "validation_split" in kwargs
+            ), "Specify validation_split key if you try to subset dataset"
 
-    def create_datagens(self):
-        training_ds_generator = ImageDataGenerator(
+        generator = ImageDataGenerator(
+            **kwargs,
+            preprocessing_function=self.preprocess_input,
+        )
+
+        augmented_generator = generator.flow_from_directory(
+            dataset_dir,
+            target_size=(
+                self.img_size,
+                self.img_size,
+            ),
+            batch_size=self.batch_size,
+            seed=self.seed,
+            subset=subset,
+        )
+
+        return augmented_generator
+
+    def get_data(self):
+        raise NotImplementedError("Implement me! :)")
+
+
+class DataLoaderEvaluation(DataLoader):
+    def __init__(self, batch_size, img_size):
+        super().__init__(batch_size, img_size)
+
+        logger.info("Creating data generators")
+        self.datagen = super().create_datagen(dataset_dir="dataset/test")
+
+    def get_data(self):
+        logger.info("Getting data generator")
+        return self.datagen
+
+
+class DataLoaderTraining(DataLoader):
+    def __init__(self, batch_size, img_size):
+        super().__init__(batch_size, img_size)
+
+        logger.info("Creating data generators")
+        self.train_datagen = super().create_datagen(
+            dataset_dir="dataset/train",
+            subset="training",
             shear_range=0.2,
             zoom_range=0.2,
             horizontal_flip=True,
             rotation_range=40,
             validation_split=0.2,
-            preprocessing_function=preprocess_input,
         )
-        validation_ds_generator = ImageDataGenerator(
-            validation_split=0.2, preprocessing_function=preprocess_input
-        )
-
-        self.train_generator = training_ds_generator.flow_from_directory(
-            "dataset/train",
-            seed=self.seed,
-            target_size=(
-                self.img_size,
-                self.img_size,
-            ),
-            batch_size=self.batch_size,
-            shuffle=True,
-            subset="training",
-        )
-
-        self.validation_generator = validation_ds_generator.flow_from_directory(
-            "dataset/train",
-            seed=self.seed,
-            target_size=(
-                self.img_size,
-                self.img_size,
-            ),
-            batch_size=self.batch_size,
-            shuffle=True,
+        self.validation_datagen = super().create_datagen(
+            dataset_dir="dataset/train",
             subset="validation",
+            validation_split=0.2,
         )
 
-    def get_datagens(self):
-        return self.train_generator, self.validation_generator
+    def get_data(self):
+        logger.info("Getting data generators")
+        return self.train_datagen, self.validation_datagen

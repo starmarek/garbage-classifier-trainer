@@ -1,5 +1,6 @@
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 import logging
+
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
 logger = logging.getLogger(__name__)
 

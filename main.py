@@ -16,6 +16,7 @@ import logging
 import coloredlogs
 import fire
 import keras.optimizers as opt
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.applications.xception import Xception
 
@@ -32,14 +33,21 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 # end workaround
 
 logger = logging.getLogger(__name__)
+tf_logger = tf.get_logger()
+tf_logger.propagate = False
 coloredlogs.install(
     fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
+coloredlogs.install(
+    fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+    logger=tf_logger,
+)
 config = process_config("configs/basic_conv.json")
 
 
-@tweaking_loop([[Xception, 299]], [opt.Adam], [0], [1024])
+@tweaking_loop([[Xception, 299]], [opt.Adam], [1], [1024])
 def learn(
     model_structure=Xception,
     image_size=299,
@@ -64,7 +72,7 @@ def learn(
     trainer = ModelTrainer(
         model_name,
         model,
-        data_loader.get_datagens(),
+        data_loader.get_data(),
         config.initial_num_epochs,
         config.patience,
     )
@@ -88,7 +96,7 @@ def learn(
     trainer = ModelTrainer(
         model_name,
         model,
-        data_loader.get_datagens(),
+        data_loader.get_data(),
         config.tune_num_epochs,
         config.patience,
     )
@@ -98,14 +106,14 @@ def learn(
 def evaluate():
     logger.info("Starting evaluate method")
     imported_model = keras.models.load_model(config.load_model_path)
-    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
+    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_data()
     Predicter(imported_model, data, config.classes).evaluate_model()
 
 
 def predict():
     logger.info("Starting predict method")
     imported_model = keras.models.load_model(config.load_model_path)
-    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
+    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_data()
     Predicter(imported_model, data, config.classes).predict_some_files()
 
 
