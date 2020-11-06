@@ -2,6 +2,7 @@ import logging
 import os
 
 import fire
+import numpy as np
 import keras.optimizers as opt
 from tensorflow import keras
 from tensorflow.keras.applications.xception import Xception
@@ -9,6 +10,7 @@ from tensorflow.keras.applications.xception import Xception
 from src.data_loader import DataLoaderEvaluation, DataLoaderTraining
 from src.decorators import tweaking_loop
 from src.model import ConvolutionModel
+from src.predicter import Predicter
 from src.trainer import ModelTrainer
 from src.utils.config import process_config
 
@@ -88,10 +90,8 @@ def evaluate():
 
 def predict():
     imported_model = keras.models.load_model(config.load_model_path)
-    loader = DataLoaderEvaluation(config.batch_size, config.image_size, config.classes)
-    data = loader.get_datagen()
-    print(imported_model.predict_classes(data)[0])
-    loader.plot_some_files_from_train_ds()
+    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
+    Predicter(imported_model, data, config.classes).predict_some_files()
 
 
 if __name__ == "__main__":
