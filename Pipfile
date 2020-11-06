@@ -15,6 +15,7 @@ numpy = "*"
 matplotlib = "*"
 dotmap = "*"
 fire = "*"
+coloredlogs = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,7 +1,6 @@
-import logging
 import os
 
-# set tensorflow logging level to only WARNING/ERROR
+# set tensorflow c++ logging level to only ERROR
 # THIS MUST BE SET BEFORE IMPORTING TENSORFLOW
 #
 #   Level | Level for Humans | Level Description
@@ -10,8 +9,11 @@ import os
 #   1     | INFO             | Filter out INFO messages
 #   2     | WARNING          | Filter out INFO & WARNING messages
 #   3     | ERROR            | Filter out all messages
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
+import logging
+
+import coloredlogs
 import fire
 import keras.optimizers as opt
 from tensorflow import keras
@@ -30,8 +32,8 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 # end workaround
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+coloredlogs.install(
+    fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
 config = process_config("configs/basic_conv.json")
