@@ -40,7 +40,7 @@ config = process_config("configs/basic_conv.json")
 
 
 @tweaking_loop([[Xception, 299]], [opt.Adam], [0], [1024])
-def tweaking(
+def learn(
     model_structure=Xception,
     image_size=299,
     dense_layers_quantity=0,
@@ -48,6 +48,7 @@ def tweaking(
     optimizer=opt.Adam,
     learning_rate=1e-3,
 ):
+    logger.info("Starting learn method")
     # initial
     data_loader = DataLoaderTraining(config.batch_size, image_size)
     model_instance = ConvolutionModel(
@@ -95,16 +96,19 @@ def tweaking(
 
 
 def evaluate():
+    logger.info("Starting evaluate method")
     imported_model = keras.models.load_model(config.load_model_path)
     data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
     Predicter(imported_model, data, config.classes).evaluate_model()
 
 
 def predict():
+    logger.info("Starting predict method")
     imported_model = keras.models.load_model(config.load_model_path)
     data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
     Predicter(imported_model, data, config.classes).predict_some_files()
 
 
 if __name__ == "__main__":
+    logger.info("Initialize trainer package")
     fire.Fire()

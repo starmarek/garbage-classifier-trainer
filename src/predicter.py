@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 class Predicter:
     def __init__(self, model_to_predict_on, data_generator, classes):
+        logger.info(f"Creating {type(self).__name__} class")
+
         self.model = model_to_predict_on
         self.data = data_generator
         self.classes = classes
@@ -34,5 +36,6 @@ class Predicter:
         plt.show()
 
     def evaluate_model(self):
+        logger.info("Starting evaluation")
         results = self.model.evaluate(self.data)
         logger.info(f"test loss, test acc: {results}")

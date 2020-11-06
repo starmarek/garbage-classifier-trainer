@@ -1,5 +1,8 @@
 from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from keras.models import Sequential
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ConvolutionModel:
@@ -15,6 +18,9 @@ class ConvolutionModel:
         model_to_recompile=None,
     ):
         assert mode == "initial" or "tune", "Please, choose proper mode."
+
+        logger.info(f"Creating {type(self).__name__} class")
+
         self.model_structure = model_structure
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity

@@ -10,11 +10,14 @@ logger = logging.getLogger(__name__)
 
 class DataLoaderEvaluation:
     def __init__(self, batch_size, img_size, classes=None):
+        logger.info(f"Creating {type(self).__name__} class")
+
         self.batch_size = batch_size
         self.img_size = img_size
         self.classes = classes
         self.seed = np.random.randint(1e6)
 
+        logger.info("Creating data generators")
         self.create_datagens()
 
     def create_datagens(self):
@@ -33,9 +36,11 @@ class DataLoaderEvaluation:
         )
 
     def get_datagen(self):
+        logger.info("Getting data generator")
         return self.eval_generator
 
     def plot_some_files_from_train_ds(self):
+        logger.info("Start plotting files from data generator")
         plt.figure(figsize=(10, 10))
         for (img, label) in self.eval_generator:
             for i in range(9):
@@ -49,6 +54,8 @@ class DataLoaderEvaluation:
 
 class DataLoaderTraining:
     def __init__(self, batch_size, img_size):
+        logger.info(f"Creating {type(self).__name__} class")
+
         self.batch_size = batch_size
         self.img_size = img_size
         self.seed = np.random.randint(1e6)

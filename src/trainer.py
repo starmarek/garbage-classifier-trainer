@@ -1,8 +1,13 @@
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ModelTrainer:
     def __init__(self, model_name, model, data_gens, num_epochs, patience):
+        logger.info(f"Creating {type(self).__name__} class")
+
         self.model = model
         self.model_name = model_name
         self.training_generator = data_gens[0]
