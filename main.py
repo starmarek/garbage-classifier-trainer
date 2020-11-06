@@ -1,8 +1,18 @@
 import logging
 import os
 
+# set tensorflow logging level to only WARNING/ERROR
+# THIS MUST BE SET BEFORE IMPORTING TENSORFLOW
+#
+#   Level | Level for Humans | Level Description
+#  -------|------------------|------------------------------------
+#   0     | DEBUG            | [Default] Print all messages
+#   1     | INFO             | Filter out INFO messages
+#   2     | WARNING          | Filter out INFO & WARNING messages
+#   3     | ERROR            | Filter out all messages
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
+
 import fire
-import numpy as np
 import keras.optimizers as opt
 from tensorflow import keras
 from tensorflow.keras.applications.xception import Xception
@@ -85,7 +95,7 @@ def tweaking(
 def evaluate():
     imported_model = keras.models.load_model(config.load_model_path)
     data = DataLoaderEvaluation(config.batch_size, config.image_size).get_datagen()
-    print(imported_model.evaluate(data))
+    Predicter(imported_model, data, config.classes).evaluate_model()
 
 
 def predict():

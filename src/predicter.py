@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Predicter:
@@ -28,3 +31,7 @@ class Predicter:
             break
         plt.tight_layout()
         plt.show()
+
+    def evaluate_model(self):
+        results = self.model.evaluate(self.data)
+        logger.info(f"test loss, test acc: {results}")
