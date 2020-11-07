@@ -98,16 +98,18 @@ def evaluate():
     data = DataLoaderEvaluation(
         config.batch_size, config.image_size, config.load_model_structure
     ).get_data()
-    Predicter(imported_model, data, config.classes).evaluate_model()
+    Predicter(imported_model, data, config.classes, config.batch_size).evaluate_model()
 
 
-def predict():
+def predict(number_of_pictures_to_predict):
     logger.info("Starting predict method")
     imported_model = keras.models.load_model(config.load_model_path)
     data = DataLoaderEvaluation(
         config.batch_size, config.image_size, config.load_model_structure
     ).get_data()
-    Predicter(imported_model, data, config.classes).predict_some_files()
+    Predicter(
+        imported_model, data, config.classes, config.batch_size
+    ).predict_some_files(number_of_pictures_to_predict)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import logging
+import math
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,22 +8,38 @@ logger = logging.getLogger(__name__)
 
 
 class Predicter:
-    def __init__(self, model_to_predict_on, data_generator, classes):
+    def __init__(self, model_to_predict_on, data_generator, classes, batch_size):
         logger.info(f"Creating {type(self).__name__} class")
 
         self.model = model_to_predict_on
         self.data = data_generator
+        self.batch_size = batch_size
         self.classes = classes
 
-    def predict_some_files(self):
-        plt.figure(figsize=(10, 10))
+    def predict_some_files(self, number_of_pictures_to_predict):
+        assert self.batch_size >= number_of_pictures_to_predict, (
+            "You can only predict as much files as a single "
+            "batch has to offer. This is a design restriction."
+        )
+
+        def generate_sublots_size():
+            sqrt = math.sqrt(number_of_pictures_to_predict)
+            if isinstance(sqrt, int):
+                return sqrt, sqrt
+            elif round(sqrt) == math.ceil(sqrt):
+                return math.ceil(sqrt), math.ceil(sqrt)
+            else:
+                return math.ceil(sqrt), round(sqrt)
+
+        size_1, size_2 = generate_sublots_size()
+        plt.figure(figsize=(15, 15))
         for (img, label) in self.data:
             batch_prediction = np.argmax(self.model.predict(img), axis=-1)
-            for i in range(9):
+            for i in range(number_of_pictures_to_predict):
                 title_background = None
                 truth_label = self.classes[np.argmax(label[i])]
                 prediction_label = self.classes[batch_prediction[i]]
-                plt.subplot(3, 3, i + 1)
+                plt.subplot(size_1, size_2, i + 1)
                 if truth_label != prediction_label:
                     title_background = {"facecolor": "red", "alpha": 0.5, "pad": 5}
                 plt.title(
