@@ -40,8 +40,15 @@ NAME_MAP = {
 class KerasAppImporter:
     def __init__(self, app_name):
         log.info(f"Creating {type(self).__name__} class")
+        try:
+            self.mapped_module_name = NAME_MAP[app_name]
+        except KeyError:
+            log.error(
+                f"Program do not support this model architecture: `{app_name}`. "
+                "Check your config."
+            )
+            raise
         self.app_name = app_name
-        self.mapped_module_name = NAME_MAP[app_name]
         self.module_to_import = (
             f"tensorflow.keras.applications.{self.mapped_module_name}"
         )
@@ -51,8 +58,8 @@ class KerasAppImporter:
             self.app = importlib.import_module(self.module_to_import)
         except ImportError:
             log.error(
-                f"""Cannot import {self.module_to_import}! \
-                Check if it exists https://github.com/keras-team/keras-applications."""
+                f"Cannot import `{self.module_to_import}`! "
+                "Check if it exists https://github.com/keras-team/keras-applications"
             )
             raise
 
