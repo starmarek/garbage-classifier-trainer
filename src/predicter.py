@@ -30,7 +30,13 @@ class Predicter:
                     bbox=title_background,
                 )
                 plt.axis("off")
-                plt.imshow(img[0 + i, :, :, ::])
+                # following method -> (img + 1) * 127.5 is the reverse process
+                # of preprocess_input func. used in DataLoader. This is needed,
+                # because data is in [-1, 1] range. Plt.imshow would clip the
+                # range to [0, 1] which would impact pictures quality.
+                # preprocess_input func. source:
+                # https://github.com/keras-team/keras-applications/blob/master/keras_applications/imagenet_utils.py
+                plt.imshow(((img[0 + i, :, :, :] + 1) * 127.5).astype(np.uint8))
             break
         plt.tight_layout()
         plt.show()
