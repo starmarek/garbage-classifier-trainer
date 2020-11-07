@@ -2,6 +2,7 @@ import logging
 
 from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from keras.models import Sequential
+from src.utils.keras_app_importer import KerasAppImporter
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class ConvolutionModel:
 
         logger.info(f"Creating {type(self).__name__} class")
 
-        self.model_structure = model_structure
+        self.model_structure = KerasAppImporter(model_structure).get_keras_model()
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity
         self.image_size = image_size

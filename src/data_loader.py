@@ -2,18 +2,20 @@ import logging
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications.xception import preprocess_input
+from .utils.keras_app_importer import KerasAppImporter
 
 logger = logging.getLogger(__name__)
 
 
 class DataLoader:
-    def __init__(self, batch_size, img_size):
+    def __init__(self, batch_size, img_size, keras_app_name):
         logger.info(f"Creating {type(self).__name__} class")
 
         self.batch_size = batch_size
         self.img_size = img_size
-        self.preprocess_input = preprocess_input
+        self.preprocess_input = KerasAppImporter(
+            keras_app_name
+        ).get_keras_preprocess_func()
         self.seed = np.random.randint(1e6)
 
     def create_datagen(self, dataset_dir, subset=None, **kwargs):
@@ -45,8 +47,8 @@ class DataLoader:
 
 
 class DataLoaderEvaluation(DataLoader):
-    def __init__(self, batch_size, img_size):
-        super().__init__(batch_size, img_size)
+    def __init__(self, batch_size, img_size, keras_app_name):
+        super().__init__(batch_size, img_size, keras_app_name)
 
         logger.info("Creating data generators")
         self.datagen = super().create_datagen(dataset_dir="dataset/test")
@@ -57,8 +59,8 @@ class DataLoaderEvaluation(DataLoader):
 
 
 class DataLoaderTraining(DataLoader):
-    def __init__(self, batch_size, img_size):
-        super().__init__(batch_size, img_size)
+    def __init__(self, batch_size, img_size, keras_app_name):
+        super().__init__(batch_size, img_size, keras_app_name)
 
         logger.info("Creating data generators")
         self.train_datagen = super().create_datagen(

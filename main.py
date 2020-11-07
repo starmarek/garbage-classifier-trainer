@@ -18,7 +18,6 @@ import fire
 import keras.optimizers as opt
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.applications.xception import Xception
 
 from src.data_loader import DataLoaderEvaluation, DataLoaderTraining
 from src.decorators import tweaking_loop
@@ -47,9 +46,9 @@ coloredlogs.install(
 config = process_config("configs/basic_conv.json")
 
 
-@tweaking_loop([[Xception, 299]], [opt.Adam], [1], [1024])
+@tweaking_loop([["Xception", 299]], [opt.Adam], [1], [1024])
 def learn(
-    model_structure=Xception,
+    model_structure="Xception",
     image_size=299,
     dense_layers_quantity=0,
     dl_neuron_quantity=1024,
@@ -58,7 +57,7 @@ def learn(
 ):
     logger.info("Starting learn method")
     # initial
-    data_loader = DataLoaderTraining(config.batch_size, image_size)
+    data_loader = DataLoaderTraining(config.batch_size, image_size, model_structure)
     model_instance = ConvolutionModel(
         model_structure,
         image_size,
@@ -80,7 +79,7 @@ def learn(
 
     # tune
     learning_rate = 1e-5
-    data_loader = DataLoaderTraining(config.batch_size, image_size)
+    data_loader = DataLoaderTraining(config.batch_size, image_size, model_structure)
     model_instance = ConvolutionModel(
         model_structure,
         image_size,
@@ -106,14 +105,18 @@ def learn(
 def evaluate():
     logger.info("Starting evaluate method")
     imported_model = keras.models.load_model(config.load_model_path)
-    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_data()
+    data = DataLoaderEvaluation(
+        config.batch_size, config.image_size, config.load_model_structure
+    ).get_data()
     Predicter(imported_model, data, config.classes).evaluate_model()
 
 
 def predict():
     logger.info("Starting predict method")
     imported_model = keras.models.load_model(config.load_model_path)
-    data = DataLoaderEvaluation(config.batch_size, config.image_size).get_data()
+    data = DataLoaderEvaluation(
+        config.batch_size, config.image_size, config.load_model_structure
+    ).get_data()
     Predicter(imported_model, data, config.classes).predict_some_files()
 
 
