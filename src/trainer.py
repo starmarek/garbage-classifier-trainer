@@ -1,4 +1,5 @@
 import logging
+import os
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
@@ -29,7 +30,6 @@ class ModelTrainer:
                 save_best_only=True,
                 save_weights_only=False,
                 mode="auto",
-                period=1,
             )
         )
         self.callbacks.append(
@@ -51,7 +51,7 @@ class ModelTrainer:
             / self.validation_generator.batch_size,
             callbacks=self.callbacks,
             use_multiprocessing=True,
-            workers=16,
+            workers=os.cpu_count(),
         )
 
         return self.model

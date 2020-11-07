@@ -13,10 +13,8 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
 
-import coloredlogs
 import fire
 import keras.optimizers as opt
-import tensorflow as tf
 from tensorflow import keras
 
 from src.data_loader import DataLoaderEvaluation, DataLoaderTraining
@@ -25,6 +23,7 @@ from src.model import ConvolutionModel
 from src.predicter import Predicter
 from src.trainer import ModelTrainer
 from src.utils.config import process_config
+from src.utils.logging import init_logging_config
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -32,17 +31,8 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 # end workaround
 
 logger = logging.getLogger(__name__)
-tf_logger = tf.get_logger()
-tf_logger.propagate = False
-coloredlogs.install(
-    fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
-coloredlogs.install(
-    fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-    logger=tf_logger,
-)
+
+init_logging_config()
 config = process_config("configs/basic_conv.json")
 
 

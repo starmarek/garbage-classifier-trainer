@@ -2,6 +2,7 @@ import logging
 
 from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from keras.models import Sequential
+
 from src.utils.keras_app_importer import KerasAppImporter
 
 logger = logging.getLogger(__name__)

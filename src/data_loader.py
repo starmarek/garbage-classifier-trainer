@@ -2,6 +2,7 @@ import logging
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
+
 from .utils.keras_app_importer import KerasAppImporter
 
 logger = logging.getLogger(__name__)
