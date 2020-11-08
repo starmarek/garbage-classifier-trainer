@@ -55,46 +55,48 @@ def train(
         )
         raise
 
-    # initial
-    data_loader = DataLoaderTraining(model_structure)
-    model_instance = ConvolutionModel(
-        model_structure,
-        dense_layers_quantity,
-        dl_neuron_quantity,
-        optimizer,
-        learning_rate,
-    )
-    model = model_instance.get_model()
-    model_name = model_instance.name_for_callbacks
-    trainer = ModelTrainer(
-        model_name,
-        model,
-        data_loader.get_data(),
-        cnf.config.train.initial_num_epochs,
-    )
-    model = trainer.train()
+    def train_step(
+        learning_rate, number_of_epochs, mode="initial", model_to_recompile=None
+    ):
+        data_loader = DataLoaderTraining(model_structure)
+        model_instance = ConvolutionModel(
+            model_structure,
+            dense_layers_quantity,
+            dl_neuron_quantity,
+            optimizer,
+            learning_rate,
+            mode=mode,
+            model_to_recompile=model_to_recompile,
+        )
+        model_name = (
+            (
+                cnf.config.train.custom_model_name
+                if cnf.config.train.custom_model_name
+                else model_instance.get_name()
+            )
+            + "_"
+            + mode
+        )
+        trainer = ModelTrainer(
+            model_name,
+            model_instance.get_model(),
+            data_loader.get_data(),
+            number_of_epochs,
+        )
+        return trainer.train()
 
+    # initial
+    model_to_recompile = train_step(
+        learning_rate=learning_rate,
+        number_of_epochs=cnf.config.train.initial_num_epochs,
+    )
     # tune
-    learning_rate = 1e-5
-    data_loader = DataLoaderTraining(model_structure)
-    model_instance = ConvolutionModel(
-        model_structure,
-        dense_layers_quantity,
-        dl_neuron_quantity,
-        optimizer,
-        learning_rate,
+    train_step(
+        learning_rate=1e-5,
+        number_of_epochs=cnf.config.train.tune_num_epochs,
         mode="tune",
-        model_to_recompile=model,
+        model_to_recompile=model_to_recompile,
     )
-    model = model_instance.get_model()
-    model_name = model_instance.name_for_callbacks
-    trainer = ModelTrainer(
-        model_name,
-        model,
-        data_loader.get_data(),
-        cnf.config.train.tune_num_epochs,
-    )
-    model = trainer.train()
 
 
 def evaluate():

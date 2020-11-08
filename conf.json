@@ -1,7 +1,8 @@
 {
     "train": {
-        "initial_num_epochs": 30,
-        "tune_num_epochs": 50,
+        "custom_model_name": "",
+        "initial_num_epochs": 1,
+        "tune_num_epochs": 1,
         "patience": 20,
         "batch_size": 16,
         "images_path": "dataset/train",

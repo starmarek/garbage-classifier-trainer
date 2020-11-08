@@ -28,27 +28,18 @@ class ConvolutionModel:
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity
         self.image_size = MODEL_TO_IMAGE_SIZE_MAP[model_structure]
-        self.model_structure_name = self.model_structure.__name__
-        if self.dense_layers_quantity == 0:
-            self.name_for_callbacks = (
-                f"{self.model_structure_name}_"
-                + f"{self.dense_layers_quantity}_"
-                + f"{optimizer.__name__}_"
-                + f"{learning_rate}_"
-                + f"{mode}"
-            )
-        else:
-            self.name_for_callbacks = (
-                f"{self.model_structure_name}_"
-                + f"{self.dense_layers_quantity}_"
-                + f"{self.dl_neurons_quantity}_"
-                + f"{optimizer.__name__}_"
-                + f"{learning_rate}_"
-                + f"{mode}"
-            )
         self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.model_to_recompile = model_to_recompile
+        self.name_for_callbacks = (
+            f"{self.model_structure.__name__}_"
+            + f"{optimizer.__name__}_"
+            + f"{learning_rate}_"
+            + f"{self.dense_layers_quantity}"
+        )
+        if self.dense_layers_quantity != 0:
+            self.name_for_callbacks += f"_{self.dl_neurons_quantity}"
+
         if mode == "initial":
             self.build_model()
         elif mode == "tune":
@@ -80,6 +71,9 @@ class ConvolutionModel:
     def get_model(self):
         self.model.summary()
         return self.model
+
+    def get_name(self):
+        return self.name_for_callbacks
 
     def recompile_model(self):
         self.model_to_recompile.trainable = True
