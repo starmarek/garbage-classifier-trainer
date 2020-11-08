@@ -54,7 +54,7 @@ class DataLoader:
 
 
 class DataLoaderEvaluation(DataLoader):
-    def __init__(self, mode="single"):
+    def __init__(self, mode="multi"):
         assert mode == "single" or "multi", "Please, choose proper mode."
         super().__init__(
             cnf.config.post_train.batch_size,

@@ -110,7 +110,7 @@ def evaluate():
 def predict_bunch(number_of_pictures_to_predict):
     log.info("Starting predict-bunch method")
     imported_model = models.load_model(cnf.config.post_train.load_model_path)
-    data = DataLoaderEvaluation(mode="multi").get_data()
+    data = DataLoaderEvaluation().get_data()
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
