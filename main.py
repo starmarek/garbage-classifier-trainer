@@ -33,11 +33,11 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 logger = logging.getLogger(__name__)
 
 init_logging()
-cnf.initialize_config("configs/basic_conv.json")
+cnf.initialize_config("conf.json")
 
 
 @tweaking_loop([["Xception", 299]], [opt.Adam], [1], [1024])
-def learn(
+def train(
     model_structure="Xception",
     image_size=299,
     dense_layers_quantity=0,
@@ -62,7 +62,7 @@ def learn(
         model_name,
         model,
         data_loader.get_data(),
-        cnf.config.initial_num_epochs,
+        cnf.config.train.initial_num_epochs,
     )
     model = trainer.train()
 
@@ -85,28 +85,28 @@ def learn(
         model_name,
         model,
         data_loader.get_data(),
-        cnf.config.tune_num_epochs,
+        cnf.config.train.tune_num_epochs,
     )
     model = trainer.train()
 
 
 def evaluate():
     logger.info("Starting evaluate method")
-    imported_model = keras.models.load_model(cnf.config.load_model_path)
+    imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation().get_data()
     Predicter(imported_model, data).evaluate_model()
 
 
 def predict_bunch(number_of_pictures_to_predict):
     logger.info("Starting predict-bunch method")
-    imported_model = keras.models.load_model(cnf.config.load_model_path)
+    imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation(mode="multi").get_data()
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
 def predict_single():
     logger.info("Starting predict-single method")
-    imported_model = keras.models.load_model(cnf.config.load_model_path)
+    imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation(mode="single").get_data()
     Predicter(imported_model, data).predict_single_file()
 

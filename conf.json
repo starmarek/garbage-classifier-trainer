@@ -1,0 +1,22 @@
+{
+    "train": {
+        "initial_num_epochs": 30,
+        "tune_num_epochs": 50,
+        "patience": 20,
+        "batch_size": 16,
+        "images_path": "dataset/train"
+    },
+    "post_train": {
+        "classes": ["glass", "metal", "organic", "paper", "plastic"],
+        "image_size": 299,
+        "load_model_path": "models/Xception_0_Adam_1e-05_tune--23--0.21--0.94.hdf5",
+        "load_model_structure": "Xception",
+        "batch_size": 16,
+        "predict_bunch": {
+            "images_path": "dataset/test"
+        },
+        "predict_single": {
+            "image_path": "dataset/test/metal/AluCan36.jpg"
+        }
+    }
+}

@@ -52,25 +52,31 @@ class DataLoader:
 
 class DataLoaderEvaluation(DataLoader):
     def __init__(self, mode="single"):
-        super().__init__(
-            cnf.config.batch_size,
-            cnf.config.image_size,
-            cnf.config.load_model_structure,
-        )
         assert mode == "single" or "multi", "Please, choose proper mode."
+        super().__init__(
+            cnf.config.post_train.batch_size,
+            cnf.config.post_train.image_size,
+            cnf.config.post_train.load_model_structure,
+        )
 
         if mode == "single":
-            logger.info(f"Loading {cnf.config.image_path}")
+            img_path = cnf.config.post_train.predict_single.image_path
+            logger.info(f"Loading {img_path}")
             img = image.load_img(
-                cnf.config.image_path,
-                target_size=(cnf.config.image_size, cnf.config.image_size),
+                img_path,
+                target_size=(
+                    self.img_size,
+                    self.img_size,
+                ),
             )
             img = image.img_to_array(img)
             img = np.expand_dims(img, axis=0)
             self.data = self.preprocess_input(img)
         else:
-            logger.info("Creating data generators")
-            self.data = super().create_datagen(dataset_dir="dataset/test")
+            logger.info("Creating data generator")
+            self.data = super().create_datagen(
+                dataset_dir=cnf.config.post_train.predict_bunch.images_path
+            )
 
     def get_data(self):
         logger.info("Getting data")
@@ -79,11 +85,11 @@ class DataLoaderEvaluation(DataLoader):
 
 class DataLoaderTraining(DataLoader):
     def __init__(self, img_size, keras_app_name):
-        super().__init__(cnf.config.batch_size, img_size, keras_app_name)
+        super().__init__(cnf.config.train.batch_size, img_size, keras_app_name)
 
         logger.info("Creating data generators")
         self.train_datagen = super().create_datagen(
-            dataset_dir="dataset/train",
+            dataset_dir=cnf.config.train.images_path,
             subset="training",
             shear_range=0.2,
             zoom_range=0.2,
@@ -92,7 +98,7 @@ class DataLoaderTraining(DataLoader):
             validation_split=0.2,
         )
         self.validation_datagen = super().create_datagen(
-            dataset_dir="dataset/train",
+            dataset_dir=cnf.config.train.images_path,
             subset="validation",
             validation_split=0.2,
         )

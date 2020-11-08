@@ -45,6 +45,7 @@ class ConvolutionModel:
                 + f"{optimizer.__name__}_"
                 + f"{learning_rate}_"
                 + f"{mode}"
+                + "dadadadada"
             )
         self.optimizer = optimizer
         self.learning_rate = learning_rate

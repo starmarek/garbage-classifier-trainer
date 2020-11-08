@@ -15,8 +15,8 @@ class Predicter:
 
         self.model = model_to_predict_on
         self.data = data
-        self.batch_size = cnf.config.batch_size
-        self.classes = cnf.config.classes
+        self.batch_size = cnf.config.post_train.batch_size
+        self.classes = cnf.config.post_train.classes
         # following method -> (img + 1) * 127.5 is the reverse process
         # of preprocess_input func. used in DataLoader. This is needed,
         # because data is in [-1, 1] range. pyplot.imshow would clip the
