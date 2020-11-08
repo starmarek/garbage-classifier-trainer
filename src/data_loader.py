@@ -1,6 +1,7 @@
 import logging
 
 import numpy as np
+from keras.preprocessing import image
 from keras.preprocessing.image import ImageDataGenerator
 
 import src.utils.config as cnf
@@ -50,19 +51,30 @@ class DataLoader:
 
 
 class DataLoaderEvaluation(DataLoader):
-    def __init__(self):
+    def __init__(self, mode="single"):
         super().__init__(
             cnf.config.batch_size,
             cnf.config.image_size,
             cnf.config.load_model_structure,
         )
+        assert mode == "single" or "multi", "Please, choose proper mode."
 
-        logger.info("Creating data generators")
-        self.datagen = super().create_datagen(dataset_dir="dataset/test")
+        if mode == "single":
+            logger.info(f"Loading {cnf.config.image_path}")
+            img = image.load_img(
+                cnf.config.image_path,
+                target_size=(cnf.config.image_size, cnf.config.image_size),
+            )
+            img = image.img_to_array(img)
+            img = np.expand_dims(img, axis=0)
+            self.data = self.preprocess_input(img)
+        else:
+            logger.info("Creating data generators")
+            self.data = super().create_datagen(dataset_dir="dataset/test")
 
     def get_data(self):
-        logger.info("Getting data generator")
-        return self.datagen
+        logger.info("Getting data")
+        return self.data
 
 
 class DataLoaderTraining(DataLoader):

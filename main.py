@@ -97,11 +97,18 @@ def evaluate():
     Predicter(imported_model, data).evaluate_model()
 
 
-def predict(number_of_pictures_to_predict):
-    logger.info("Starting predict method")
+def predict_bunch(number_of_pictures_to_predict):
+    logger.info("Starting predict-bunch method")
     imported_model = keras.models.load_model(cnf.config.load_model_path)
-    data = DataLoaderEvaluation().get_data()
+    data = DataLoaderEvaluation(mode="multi").get_data()
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
+
+
+def predict_single():
+    logger.info("Starting predict-single method")
+    imported_model = keras.models.load_model(cnf.config.load_model_path)
+    data = DataLoaderEvaluation(mode="single").get_data()
+    Predicter(imported_model, data).predict_single_file()
 
 
 if __name__ == "__main__":

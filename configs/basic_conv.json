@@ -6,5 +6,6 @@
     "patience": 20,
     "load_model_path": "models/Xception_0_Adam_1e-05_tune--23--0.21--0.94.hdf5",
     "image_size": 299,
-    "load_model_structure": "Xception"
+    "load_model_structure": "Xception",
+    "image_path": "dataset/test/metal/AluCan36.jpg"
 }

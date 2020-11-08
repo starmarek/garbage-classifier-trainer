@@ -10,13 +10,22 @@ logger = logging.getLogger(__name__)
 
 
 class Predicter:
-    def __init__(self, model_to_predict_on, data_generator):
+    def __init__(self, model_to_predict_on, data):
         logger.info(f"Creating {type(self).__name__} class")
 
         self.model = model_to_predict_on
-        self.data = data_generator
+        self.data = data
         self.batch_size = cnf.config.batch_size
         self.classes = cnf.config.classes
+        # following method -> (img + 1) * 127.5 is the reverse process
+        # of preprocess_input func. used in DataLoader. This is needed,
+        # because data is in [-1, 1] range. pyplot.imshow would clip the
+        # range to [0, 1] which would impact pictures quality.
+        # preprocess_input func. source:
+        # https://github.com/keras-team/keras-applications/blob/master/keras_applications/imagenet_utils.py
+        self.invert_tf_preprocess_input_rescale = lambda img: (
+            (img + 1) * 127.5
+        ).astype(np.uint8)
 
     def predict_some_files(self, number_of_pictures_to_predict):
         assert self.batch_size >= number_of_pictures_to_predict, (
@@ -49,15 +58,18 @@ class Predicter:
                     bbox=title_background,
                 )
                 plt.axis("off")
-                # following method -> (img + 1) * 127.5 is the reverse process
-                # of preprocess_input func. used in DataLoader. This is needed,
-                # because data is in [-1, 1] range. Plt.imshow would clip the
-                # range to [0, 1] which would impact pictures quality.
-                # preprocess_input func. source:
-                # https://github.com/keras-team/keras-applications/blob/master/keras_applications/imagenet_utils.py
-                plt.imshow(((img[0 + i, :, :, :] + 1) * 127.5).astype(np.uint8))
+                plt.imshow(self.invert_tf_preprocess_input_rescale(img[0 + i, :, :, :]))
             break
         plt.tight_layout()
+        plt.show()
+
+    def predict_single_file(self):
+        prediction = np.argmax(self.model.predict(self.data))
+        plt.figure()
+        prediction_label = self.classes[prediction]
+        plt.title("prediction: " + prediction_label)
+        plt.axis("off")
+        plt.imshow(self.invert_tf_preprocess_input_rescale(self.data[0]))
         plt.show()
 
     def evaluate_model(self):
