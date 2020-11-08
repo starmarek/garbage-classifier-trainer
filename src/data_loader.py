@@ -1,8 +1,11 @@
 import logging
 
 import numpy as np
-from keras.preprocessing import image
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import (
+    ImageDataGenerator,
+    img_to_array,
+    load_img,
+)
 
 import src.utils.config as cnf
 
@@ -62,14 +65,14 @@ class DataLoaderEvaluation(DataLoader):
         if mode == "single":
             img_path = cnf.config.post_train.predict_single.image_path
             log.info(f"Loading {img_path}")
-            img = image.load_img(
+            img = load_img(
                 img_path,
                 target_size=(
                     self.img_size,
                     self.img_size,
                 ),
             )
-            img = image.img_to_array(img)
+            img = img_to_array(img)
             img = np.expand_dims(img, axis=0)
             self.data = self.preprocess_input(img)
         else:

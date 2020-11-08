@@ -1,11 +1,11 @@
 import logging
 
-from keras.layers import Dense, Dropout, GlobalAveragePooling2D
-from keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.models import Sequential
 
 from src.utils.keras_app_importer import KerasAppImporter
 
-log = logging.getlog(__name__)
+log = logging.getLogger(__name__)
 
 
 class ConvolutionModel:

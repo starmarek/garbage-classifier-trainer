@@ -6,7 +6,7 @@ import numpy as np
 
 import src.utils.config as cnf
 
-log = logging.getlog(__name__)
+log = logging.getLogger(__name__)
 
 
 class Predicter:

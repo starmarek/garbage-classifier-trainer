@@ -15,7 +15,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import logging
 
 import fire
-from tensorflow import keras
+from tensorflow.keras import models
 
 import src.utils.config as cnf
 from src.data_loader import DataLoaderEvaluation, DataLoaderTraining
@@ -102,21 +102,21 @@ def train(
 
 def evaluate():
     log.info("Starting evaluate method")
-    imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
+    imported_model = models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation().get_data()
     Predicter(imported_model, data).evaluate_model()
 
 
 def predict_bunch(number_of_pictures_to_predict):
     log.info("Starting predict-bunch method")
-    imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
+    imported_model = models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation(mode="multi").get_data()
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
 def predict_single():
     log.info("Starting predict-single method")
-    imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
+    imported_model = models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation(mode="single").get_data()
     Predicter(imported_model, data).predict_single_file()
 
