@@ -5,7 +5,7 @@ from keras.models import Sequential
 
 from src.utils.keras_app_importer import KerasAppImporter
 
-logger = logging.getLogger(__name__)
+log = logging.getlog(__name__)
 
 
 class ConvolutionModel:
@@ -22,7 +22,7 @@ class ConvolutionModel:
     ):
         assert mode == "initial" or "tune", "Please, choose proper mode."
 
-        logger.info(f"Creating {type(self).__name__} class")
+        log.info(f"Creating {type(self).__name__} class")
 
         self.model_structure = KerasAppImporter(model_structure).get_keras_model()
         self.dense_layers_quantity = dense_layers_quantity

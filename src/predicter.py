@@ -6,12 +6,12 @@ import numpy as np
 
 import src.utils.config as cnf
 
-logger = logging.getLogger(__name__)
+log = logging.getlog(__name__)
 
 
 class Predicter:
     def __init__(self, model_to_predict_on, data):
-        logger.info(f"Creating {type(self).__name__} class")
+        log.info(f"Creating {type(self).__name__} class")
 
         self.model = model_to_predict_on
         self.data = data
@@ -73,6 +73,6 @@ class Predicter:
         plt.show()
 
     def evaluate_model(self):
-        logger.info("Starting evaluation")
+        log.info("Starting evaluation")
         results = self.model.evaluate(self.data)
-        logger.info(f"test loss, test acc: {results}")
+        log.info(f"test loss, test acc: {results}")

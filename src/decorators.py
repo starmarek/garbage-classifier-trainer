@@ -1,7 +1,7 @@
 import logging
 from functools import wraps
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def tweaking_loop(

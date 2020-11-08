@@ -30,7 +30,7 @@ from src.utils.logging import init_logging
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 # end workaround
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 init_logging()
 cnf.initialize_config("conf.json")
@@ -45,12 +45,12 @@ def train(
     optimizer="Adam",
     learning_rate=1e-3,
 ):
-    logger.info("Starting learn method")
+    log.info("Starting learn method")
     try:
         optimizer_lib = importlib.import_module("tensorflow.keras.optimizers")
         optimizer = getattr(optimizer_lib, optimizer)
     except AttributeError:
-        logger.error(
+        log.error(
             f"Cannot import `tensorflow.keras.optimizers.{optimizer}`! "
             "Check if it exists https://keras.io/api/optimizers/#available-optimizers"
         )
@@ -101,26 +101,26 @@ def train(
 
 
 def evaluate():
-    logger.info("Starting evaluate method")
+    log.info("Starting evaluate method")
     imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation().get_data()
     Predicter(imported_model, data).evaluate_model()
 
 
 def predict_bunch(number_of_pictures_to_predict):
-    logger.info("Starting predict-bunch method")
+    log.info("Starting predict-bunch method")
     imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation(mode="multi").get_data()
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
 def predict_single():
-    logger.info("Starting predict-single method")
+    log.info("Starting predict-single method")
     imported_model = keras.models.load_model(cnf.config.post_train.load_model_path)
     data = DataLoaderEvaluation(mode="single").get_data()
     Predicter(imported_model, data).predict_single_file()
 
 
 if __name__ == "__main__":
-    logger.info("Initialize trainer package")
+    log.info("Initialize trainer package")
     fire.Fire()

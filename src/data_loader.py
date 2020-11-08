@@ -8,12 +8,12 @@ import src.utils.config as cnf
 
 from .utils.keras_app_importer import KerasAppImporter
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class DataLoader:
     def __init__(self, batch_size, img_size, keras_app_name):
-        logger.info(f"Creating {type(self).__name__} class")
+        log.info(f"Creating {type(self).__name__} class")
 
         self.batch_size = batch_size
         self.img_size = img_size
@@ -61,7 +61,7 @@ class DataLoaderEvaluation(DataLoader):
 
         if mode == "single":
             img_path = cnf.config.post_train.predict_single.image_path
-            logger.info(f"Loading {img_path}")
+            log.info(f"Loading {img_path}")
             img = image.load_img(
                 img_path,
                 target_size=(
@@ -73,13 +73,13 @@ class DataLoaderEvaluation(DataLoader):
             img = np.expand_dims(img, axis=0)
             self.data = self.preprocess_input(img)
         else:
-            logger.info("Creating data generator")
+            log.info("Creating data generator")
             self.data = super().create_datagen(
                 dataset_dir=cnf.config.post_train.predict_bunch.images_path
             )
 
     def get_data(self):
-        logger.info("Getting data")
+        log.info("Getting data")
         return self.data
 
 
@@ -87,7 +87,7 @@ class DataLoaderTraining(DataLoader):
     def __init__(self, img_size, keras_app_name):
         super().__init__(cnf.config.train.batch_size, img_size, keras_app_name)
 
-        logger.info("Creating data generators")
+        log.info("Creating data generators")
         self.train_datagen = super().create_datagen(
             dataset_dir=cnf.config.train.images_path,
             subset="training",
@@ -104,5 +104,5 @@ class DataLoaderTraining(DataLoader):
         )
 
     def get_data(self):
-        logger.info("Getting data generators")
+        log.info("Getting data generators")
         return self.train_datagen, self.validation_datagen
