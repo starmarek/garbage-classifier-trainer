@@ -1,47 +1,16 @@
 import importlib
 import logging
 
-log = logging.getLogger(__name__)
+from .maps import MODEL_NAME_TO_MODULE_NAME_MAP
 
-NAME_MAP = {
-    "Xception": "xception",
-    "VGG16": "vgg16",
-    "VGG19": "vgg19",
-    "ResNet50": "resnet50",
-    "ResNet101": "resnet",
-    "ResNet152": "resnet",
-    "ResNet50V2": "resnet_v2",
-    "ResNet101V2": "resnet_v2",
-    "ResNet152V2": "resnet_v2",
-    "ResNeXt50": "resnext",
-    "ResNeXt101": "resnext",
-    "InceptionV3": "inception_v3",
-    "InceptionResNetV2": "inception_resnet_v2",
-    "MobileNetV2": "mobilenet_v2",
-    "MobileNet": "mobilenet",
-    "DenseNet121": "densenet",
-    "DenseNet169": "densenet",
-    "DenseNet201": "densenet",
-    "NASNetMobile": "nasnet",
-    "NASNetLarge": "nasnet",
-    "MobileNetV3Small": "mobilenet_v3",
-    "MobileNetV3Large": "mobilenet_v3",
-    "EfficientNetB0": "efficientnet",
-    "EfficientNetB1": "efficientnet",
-    "EfficientNetB2": "efficientnet",
-    "EfficientNetB3": "efficientnet",
-    "EfficientNetB4": "efficientnet",
-    "EfficientNetB5": "efficientnet",
-    "EfficientNetB6": "efficientnet",
-    "EfficientNetB7": "efficientnet",
-}
+log = logging.getLogger(__name__)
 
 
 class KerasAppImporter:
     def __init__(self, app_name):
         log.info(f"Creating {type(self).__name__} class")
         try:
-            self.mapped_module_name = NAME_MAP[app_name]
+            self.mapped_module_name = MODEL_NAME_TO_MODULE_NAME_MAP[app_name]
         except KeyError:
             log.error(
                 f"Program do not support this model architecture: `{app_name}`. "

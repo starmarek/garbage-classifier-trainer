@@ -4,6 +4,7 @@ from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras.models import Sequential
 
 from src.utils.keras_app_importer import KerasAppImporter
+from src.utils.maps import MODEL_TO_IMAGE_SIZE_MAP
 
 log = logging.getLogger(__name__)
 
@@ -12,7 +13,6 @@ class ConvolutionModel:
     def __init__(
         self,
         model_structure,
-        image_size,
         dense_layers_quantity,
         dl_neurons_quantity,
         optimizer,
@@ -27,7 +27,7 @@ class ConvolutionModel:
         self.model_structure = KerasAppImporter(model_structure).get_keras_model()
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity
-        self.image_size = image_size
+        self.image_size = MODEL_TO_IMAGE_SIZE_MAP[model_structure]
         self.model_structure_name = self.model_structure.__name__
         if self.dense_layers_quantity == 0:
             self.name_for_callbacks = (
@@ -45,7 +45,6 @@ class ConvolutionModel:
                 + f"{optimizer.__name__}_"
                 + f"{learning_rate}_"
                 + f"{mode}"
-                + "dadadadada"
             )
         self.optimizer = optimizer
         self.learning_rate = learning_rate

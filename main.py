@@ -39,7 +39,6 @@ cnf.initialize_config("conf.json")
 @tweaking_loop(*cnf.config.train.tweaking_loop_args)
 def train(
     model_structure="Xception",
-    image_size=299,
     dense_layers_quantity=0,
     dl_neuron_quantity=1024,
     optimizer="Adam",
@@ -57,10 +56,9 @@ def train(
         raise
 
     # initial
-    data_loader = DataLoaderTraining(image_size, model_structure)
+    data_loader = DataLoaderTraining(model_structure)
     model_instance = ConvolutionModel(
         model_structure,
-        image_size,
         dense_layers_quantity,
         dl_neuron_quantity,
         optimizer,
@@ -78,10 +76,9 @@ def train(
 
     # tune
     learning_rate = 1e-5
-    data_loader = DataLoaderTraining(image_size, model_structure)
+    data_loader = DataLoaderTraining(model_structure)
     model_instance = ConvolutionModel(
         model_structure,
-        image_size,
         dense_layers_quantity,
         dl_neuron_quantity,
         optimizer,

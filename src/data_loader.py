@@ -8,6 +8,7 @@ from tensorflow.keras.preprocessing.image import (
 )
 
 import src.utils.config as cnf
+from src.utils.maps import MODEL_TO_IMAGE_SIZE_MAP
 
 from .utils.keras_app_importer import KerasAppImporter
 
@@ -15,11 +16,11 @@ log = logging.getLogger(__name__)
 
 
 class DataLoader:
-    def __init__(self, batch_size, img_size, keras_app_name):
+    def __init__(self, batch_size, keras_app_name):
         log.info(f"Creating {type(self).__name__} class")
 
         self.batch_size = batch_size
-        self.img_size = img_size
+        self.img_size = MODEL_TO_IMAGE_SIZE_MAP[keras_app_name]
         self.preprocess_input = KerasAppImporter(
             keras_app_name
         ).get_keras_preprocess_func()
@@ -58,7 +59,6 @@ class DataLoaderEvaluation(DataLoader):
         assert mode == "single" or "multi", "Please, choose proper mode."
         super().__init__(
             cnf.config.post_train.batch_size,
-            cnf.config.post_train.image_size,
             cnf.config.post_train.load_model_structure,
         )
 
@@ -87,8 +87,8 @@ class DataLoaderEvaluation(DataLoader):
 
 
 class DataLoaderTraining(DataLoader):
-    def __init__(self, img_size, keras_app_name):
-        super().__init__(cnf.config.train.batch_size, img_size, keras_app_name)
+    def __init__(self, keras_app_name):
+        super().__init__(cnf.config.train.batch_size, keras_app_name)
 
         log.info("Creating data generators")
         self.train_datagen = super().create_datagen(
