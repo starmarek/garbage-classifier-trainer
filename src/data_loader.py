@@ -3,6 +3,8 @@ import logging
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 
+import src.utils.config as cnf
+
 from .utils.keras_app_importer import KerasAppImporter
 
 logger = logging.getLogger(__name__)
@@ -48,8 +50,12 @@ class DataLoader:
 
 
 class DataLoaderEvaluation(DataLoader):
-    def __init__(self, batch_size, img_size, keras_app_name):
-        super().__init__(batch_size, img_size, keras_app_name)
+    def __init__(self):
+        super().__init__(
+            cnf.config.batch_size,
+            cnf.config.image_size,
+            cnf.config.load_model_structure,
+        )
 
         logger.info("Creating data generators")
         self.datagen = super().create_datagen(dataset_dir="dataset/test")
@@ -60,8 +66,8 @@ class DataLoaderEvaluation(DataLoader):
 
 
 class DataLoaderTraining(DataLoader):
-    def __init__(self, batch_size, img_size, keras_app_name):
-        super().__init__(batch_size, img_size, keras_app_name)
+    def __init__(self, img_size, keras_app_name):
+        super().__init__(cnf.config.batch_size, img_size, keras_app_name)
 
         logger.info("Creating data generators")
         self.train_datagen = super().create_datagen(

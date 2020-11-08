@@ -17,13 +17,13 @@ import fire
 import keras.optimizers as opt
 from tensorflow import keras
 
+import src.utils.config as cnf
 from src.data_loader import DataLoaderEvaluation, DataLoaderTraining
 from src.decorators import tweaking_loop
 from src.model import ConvolutionModel
 from src.predicter import Predicter
 from src.trainer import ModelTrainer
-from src.utils.config import process_config
-from src.utils.logging import init_logging_config
+from src.utils.logging import init_logging
 
 # start workaround
 # https://stackoverflow.com/questions/53698035/failed-to-get-convolution-algorithm-this-is-probably-because-cudnn-failed-to-in
@@ -32,8 +32,8 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 
 logger = logging.getLogger(__name__)
 
-init_logging_config()
-config = process_config("configs/basic_conv.json")
+init_logging()
+cnf.initialize_config("configs/basic_conv.json")
 
 
 @tweaking_loop([["Xception", 299]], [opt.Adam], [1], [1024])
@@ -47,7 +47,7 @@ def learn(
 ):
     logger.info("Starting learn method")
     # initial
-    data_loader = DataLoaderTraining(config.batch_size, image_size, model_structure)
+    data_loader = DataLoaderTraining(image_size, model_structure)
     model_instance = ConvolutionModel(
         model_structure,
         image_size,
@@ -62,14 +62,13 @@ def learn(
         model_name,
         model,
         data_loader.get_data(),
-        config.initial_num_epochs,
-        config.patience,
+        cnf.config.initial_num_epochs,
     )
     model = trainer.train()
 
     # tune
     learning_rate = 1e-5
-    data_loader = DataLoaderTraining(config.batch_size, image_size, model_structure)
+    data_loader = DataLoaderTraining(image_size, model_structure)
     model_instance = ConvolutionModel(
         model_structure,
         image_size,
@@ -86,30 +85,23 @@ def learn(
         model_name,
         model,
         data_loader.get_data(),
-        config.tune_num_epochs,
-        config.patience,
+        cnf.config.tune_num_epochs,
     )
     model = trainer.train()
 
 
 def evaluate():
     logger.info("Starting evaluate method")
-    imported_model = keras.models.load_model(config.load_model_path)
-    data = DataLoaderEvaluation(
-        config.batch_size, config.image_size, config.load_model_structure
-    ).get_data()
-    Predicter(imported_model, data, config.classes, config.batch_size).evaluate_model()
+    imported_model = keras.models.load_model(cnf.config.load_model_path)
+    data = DataLoaderEvaluation().get_data()
+    Predicter(imported_model, data).evaluate_model()
 
 
 def predict(number_of_pictures_to_predict):
     logger.info("Starting predict method")
-    imported_model = keras.models.load_model(config.load_model_path)
-    data = DataLoaderEvaluation(
-        config.batch_size, config.image_size, config.load_model_structure
-    ).get_data()
-    Predicter(
-        imported_model, data, config.classes, config.batch_size
-    ).predict_some_files(number_of_pictures_to_predict)
+    imported_model = keras.models.load_model(cnf.config.load_model_path)
+    data = DataLoaderEvaluation().get_data()
+    Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
 if __name__ == "__main__":

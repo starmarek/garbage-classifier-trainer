@@ -4,17 +4,19 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+import src.utils.config as cnf
+
 logger = logging.getLogger(__name__)
 
 
 class Predicter:
-    def __init__(self, model_to_predict_on, data_generator, classes, batch_size):
+    def __init__(self, model_to_predict_on, data_generator):
         logger.info(f"Creating {type(self).__name__} class")
 
         self.model = model_to_predict_on
         self.data = data_generator
-        self.batch_size = batch_size
-        self.classes = classes
+        self.batch_size = cnf.config.batch_size
+        self.classes = cnf.config.classes
 
     def predict_some_files(self, number_of_pictures_to_predict):
         assert self.batch_size >= number_of_pictures_to_predict, (

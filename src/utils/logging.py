@@ -22,7 +22,7 @@ class _TFWarningsFilter(logging.Filter):
         )
 
 
-def init_logging_config():
+def init_logging():
     tf_logger = tf.get_logger()
     tf_logger.propagate = False
     tf_logger.addFilter(_TFWarningsFilter())

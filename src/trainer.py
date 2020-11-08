@@ -3,11 +3,13 @@ import os
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
+import src.utils.config as cnf
+
 logger = logging.getLogger(__name__)
 
 
 class ModelTrainer:
-    def __init__(self, model_name, model, data_gens, num_epochs, patience):
+    def __init__(self, model_name, model, data_gens, num_epochs):
         logger.info(f"Creating {type(self).__name__} class")
 
         self.model = model
@@ -16,7 +18,7 @@ class ModelTrainer:
         self.validation_generator = data_gens[1]
         self.num_epochs = num_epochs
         self.callbacks = []
-        self.patience = patience
+        self.patience = cnf.config.patience
         self.init_callbacks()
 
     def init_callbacks(self):
