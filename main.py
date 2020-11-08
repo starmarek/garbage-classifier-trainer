@@ -1,3 +1,4 @@
+import importlib
 import os
 
 # set tensorflow c++ logging level to only ERROR
@@ -14,7 +15,6 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import logging
 
 import fire
-import keras.optimizers as opt
 from tensorflow import keras
 
 import src.utils.config as cnf
@@ -36,16 +36,26 @@ init_logging()
 cnf.initialize_config("conf.json")
 
 
-@tweaking_loop([["Xception", 299]], [opt.Adam], [1], [1024])
+@tweaking_loop(*cnf.config.train.tweaking_loop_args)
 def train(
     model_structure="Xception",
     image_size=299,
     dense_layers_quantity=0,
     dl_neuron_quantity=1024,
-    optimizer=opt.Adam,
+    optimizer="Adam",
     learning_rate=1e-3,
 ):
     logger.info("Starting learn method")
+    try:
+        optimizer_lib = importlib.import_module("tensorflow.keras.optimizers")
+        optimizer = getattr(optimizer_lib, optimizer)
+    except AttributeError:
+        logger.error(
+            f"Cannot import `tensorflow.keras.optimizers.{optimizer}`! "
+            "Check if it exists https://keras.io/api/optimizers/#available-optimizers"
+        )
+        raise
+
     # initial
     data_loader = DataLoaderTraining(image_size, model_structure)
     model_instance = ConvolutionModel(

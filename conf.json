@@ -4,7 +4,8 @@
         "tune_num_epochs": 50,
         "patience": 20,
         "batch_size": 16,
-        "images_path": "dataset/train"
+        "images_path": "dataset/train",
+        "tweaking_loop_args": [[["Xception", 299]], ["Adam"], [1], [1024]]
     },
     "post_train": {
         "classes": ["glass", "metal", "organic", "paper", "plastic"],
