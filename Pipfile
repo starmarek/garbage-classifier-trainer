@@ -7,6 +7,7 @@ verify_ssl = true
 black = "==20.8b1"
 flake8 = "*"
 isort = "*"
+pre-commit = "*"
 
 [packages]
 tensorflow = "*"
