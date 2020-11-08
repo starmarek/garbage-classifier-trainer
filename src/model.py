@@ -31,14 +31,14 @@ class ConvolutionModel:
         self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.model_to_recompile = model_to_recompile
-        self.name_for_callbacks = (
+        self._name = (
             f"{self.model_structure.__name__}_"
             + f"{optimizer.__name__}_"
             + f"{learning_rate}_"
             + f"{self.dense_layers_quantity}"
         )
         if self.dense_layers_quantity != 0:
-            self.name_for_callbacks += f"_{self.dl_neurons_quantity}"
+            self._name += f"_{self.dl_neurons_quantity}"
 
         if mode == "initial":
             self.build_model()
@@ -52,15 +52,15 @@ class ConvolutionModel:
             weights="imagenet",
         )
         base_model.trainable = False
-        self.model = Sequential()
-        self.model.add(base_model)
-        self.model.add(GlobalAveragePooling2D())
-        self.model.add(Dropout(0.15))
+        self._model = Sequential()
+        self._model.add(base_model)
+        self._model.add(GlobalAveragePooling2D())
+        self._model.add(Dropout(0.15))
         for i in range(self.dense_layers_quantity):
-            self.model.add(Dense(self.dl_neurons_quantity, activation="relu"))
-        self.model.add(Dense(5, activation="softmax"))
+            self._model.add(Dense(self.dl_neurons_quantity, activation="relu"))
+        self._model.add(Dense(5, activation="softmax"))
 
-        self.model.compile(
+        self._model.compile(
             loss="categorical_crossentropy",
             optimizer=self.optimizer(
                 learning_rate=self.learning_rate,
@@ -68,12 +68,14 @@ class ConvolutionModel:
             metrics=["accuracy"],
         )
 
-    def get_model(self):
-        self.model.summary()
-        return self.model
+    @property
+    def model(self):
+        self._model.summary()
+        return self._model
 
-    def get_name(self):
-        return self.name_for_callbacks
+    @property
+    def name(self):
+        return self._name
 
     def recompile_model(self):
         self.model_to_recompile.trainable = True
@@ -84,4 +86,4 @@ class ConvolutionModel:
             ),
             metrics=["accuracy"],
         )
-        self.model = self.model_to_recompile
+        self._model = self.model_to_recompile

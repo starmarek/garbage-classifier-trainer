@@ -72,14 +72,14 @@ def train(
             (
                 cnf.config.train.custom_model_name
                 if cnf.config.train.custom_model_name
-                else model_instance.get_name()
+                else model_instance.name
             )
             + "_"
             + mode
         )
         trainer = ModelTrainer(
             model_name,
-            model_instance.get_model(),
+            model_instance.model,
             data_loader.get_data(),
             number_of_epochs,
         )
