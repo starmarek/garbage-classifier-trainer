@@ -50,7 +50,8 @@ class DataLoader:
 
         return augmented_generator
 
-    def get_data(self):
+    @property
+    def data(self):
         raise NotImplementedError("Implement me! :)")
 
 
@@ -74,16 +75,17 @@ class DataLoaderEvaluation(DataLoader):
             )
             img = img_to_array(img)
             img = np.expand_dims(img, axis=0)
-            self.data = self.preprocess_input(img)
+            self._data = self.preprocess_input(img)
         else:
             log.info("Creating data generator")
-            self.data = super().create_datagen(
+            self._data = super().create_datagen(
                 dataset_dir=cnf.config.post_train.predict_bunch.images_path
             )
 
-    def get_data(self):
+    @property
+    def data(self):
         log.info("Getting data")
-        return self.data
+        return self._data
 
 
 class DataLoaderTraining(DataLoader):
@@ -91,7 +93,7 @@ class DataLoaderTraining(DataLoader):
         super().__init__(cnf.config.train.batch_size, keras_app_name)
 
         log.info("Creating data generators")
-        self.train_datagen = super().create_datagen(
+        self._train_datagen = super().create_datagen(
             dataset_dir=cnf.config.train.images_path,
             subset="training",
             shear_range=0.2,
@@ -100,12 +102,13 @@ class DataLoaderTraining(DataLoader):
             rotation_range=40,
             validation_split=0.2,
         )
-        self.validation_datagen = super().create_datagen(
+        self._validation_datagen = super().create_datagen(
             dataset_dir=cnf.config.train.images_path,
             subset="validation",
             validation_split=0.2,
         )
 
-    def get_data(self):
+    @property
+    def data(self):
         log.info("Getting data generators")
-        return self.train_datagen, self.validation_datagen
+        return self._train_datagen, self._validation_datagen

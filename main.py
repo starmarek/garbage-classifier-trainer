@@ -80,7 +80,7 @@ def train(
         trainer = ModelTrainer(
             model_name,
             model_instance.model,
-            data_loader.get_data(),
+            data_loader.data,
             number_of_epochs,
         )
         return trainer.train()
@@ -102,21 +102,21 @@ def train(
 def evaluate():
     log.info("Starting evaluate method")
     imported_model = models.load_model(cnf.config.post_train.load_model_path)
-    data = DataLoaderEvaluation().get_data()
+    data = DataLoaderEvaluation().data
     Predicter(imported_model, data).evaluate_model()
 
 
 def predict_bunch(number_of_pictures_to_predict):
     log.info("Starting predict-bunch method")
     imported_model = models.load_model(cnf.config.post_train.load_model_path)
-    data = DataLoaderEvaluation().get_data()
+    data = DataLoaderEvaluation().data
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
 def predict_single():
     log.info("Starting predict-single method")
     imported_model = models.load_model(cnf.config.post_train.load_model_path)
-    data = DataLoaderEvaluation(mode="single").get_data()
+    data = DataLoaderEvaluation(mode="single").data
     Predicter(imported_model, data).predict_single_file()
 
 
