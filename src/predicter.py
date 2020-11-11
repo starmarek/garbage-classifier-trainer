@@ -32,7 +32,7 @@ class Predicter:
             "You can only predict as much files as a single "
             "batch has to offer. This is a design restriction."
         )
-        log.debug(f"Will attempt to predict {number_of_pictures_to_predict}")
+        log.debug(f"Will attempt to predict {number_of_pictures_to_predict} images")
 
         def generate_sublots_size():
             sqrt = math.sqrt(number_of_pictures_to_predict)

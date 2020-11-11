@@ -21,12 +21,12 @@ def tweaking_loop(
                     for dense_layers_quantity in dense_layers_quantities:
                         log.debug(
                             "Dense layer quantity "
-                            f"change to = `{dense_layers_quantity}`"
+                            f"change to `{dense_layers_quantity}`"
                         )
                         for dl_neuron_quantity in dl_neuron_quantities:
                             log.debug(
                                 "Dense layer neuron quantity change "
-                                f"to `{model_structure}`"
+                                f"to `{dl_neuron_quantity}`"
                             )
                             log.debug(
                                 f"Running train function with arguments = "

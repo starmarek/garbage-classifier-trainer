@@ -4,7 +4,6 @@ import coloredlogs
 import tensorflow as tf
 
 LOGS_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-LOGS_LEVEL = logging.INFO
 TF_LOGS_TO_FILTER = [
     # warning which is showing up if multiprocessing=True
     # is passed to model.fit().
@@ -26,17 +25,19 @@ class _TFWarningsFilter(logging.Filter):
         )
 
 
-def init_logging():
+def init_logging(debug):
     tf_logger = tf.get_logger()
     tf_logger.propagate = False
     tf_logger.addFilter(_TFWarningsFilter())
 
+    level = logging.DEBUG if debug else logging.INFO
+
     coloredlogs.install(
         fmt=LOGS_FORMAT,
-        level=LOGS_LEVEL,
+        level=level,
     )
     coloredlogs.install(
         fmt=LOGS_FORMAT,
-        level=LOGS_LEVEL,
+        level=level,
         logger=tf_logger,
     )

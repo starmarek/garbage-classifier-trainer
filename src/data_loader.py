@@ -17,7 +17,6 @@ log = logging.getLogger(__name__)
 
 class DataLoader:
     def __init__(self, batch_size, keras_app_name):
-        log.debug(f"Initializing parent class = `{type(self).__name__}`")
         self.batch_size = batch_size
         self.img_size = MODEL_TO_IMAGE_SIZE_MAP[keras_app_name]
         self.preprocess_input = KerasAppImporter(
@@ -70,7 +69,7 @@ class DataLoaderEvaluation(DataLoader):
 
         if mode == "single":
             img_path = cnf.config.post_train.predict_single.image_path
-            log.info(f"Loading {img_path}")
+            log.debug(f"Loading {img_path}")
             img = load_img(
                 img_path,
                 target_size=(
