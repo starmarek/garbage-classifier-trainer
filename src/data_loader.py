@@ -8,7 +8,7 @@ from tensorflow.keras.preprocessing.image import (
 )
 
 import src.utils.config as cnf
-from src.utils.maps import MODEL_TO_IMAGE_SIZE_MAP
+from src.utils.maps import MODEL_STRUCTURE_TO_IMAGE_SIZE_MAP
 
 from .utils.keras_app_importer import KerasAppImporter
 
@@ -16,11 +16,11 @@ log = logging.getLogger(__name__)
 
 
 class DataLoader:
-    def __init__(self, batch_size, keras_app_name):
+    def __init__(self, batch_size, model_structure):
         self.batch_size = batch_size
-        self.img_size = MODEL_TO_IMAGE_SIZE_MAP[keras_app_name]
+        self.img_size = MODEL_STRUCTURE_TO_IMAGE_SIZE_MAP[model_structure]
         self.preprocess_input = KerasAppImporter(
-            keras_app_name
+            model_structure
         ).get_keras_preprocess_func()
         self.seed = np.random.randint(1e6)
         log.debug(f"Random seed for data generator shuffle = `{self.seed}`")
@@ -92,9 +92,9 @@ class DataLoaderEvaluation(DataLoader):
 
 
 class DataLoaderTraining(DataLoader):
-    def __init__(self, keras_app_name):
+    def __init__(self, model_structure):
         log.debug(f"Creating {type(self).__name__} class")
-        super().__init__(cnf.config.train.batch_size, keras_app_name)
+        super().__init__(cnf.config.train.batch_size, model_structure)
 
         self._train_datagen = super().create_datagen(
             dataset_dir=cnf.config.train.images_path,

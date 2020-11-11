@@ -1,4 +1,4 @@
-MODEL_NAME_TO_MODULE_NAME_MAP = {
+MODEL_STRUCTURE_TO_MODULE_NAME_MAP = {
     "Xception": "xception",
     "VGG16": "vgg16",
     "VGG19": "vgg19",
@@ -31,7 +31,7 @@ MODEL_NAME_TO_MODULE_NAME_MAP = {
     "EfficientNetB7": "efficientnet",
 }
 
-MODEL_TO_IMAGE_SIZE_MAP = {
+MODEL_STRUCTURE_TO_IMAGE_SIZE_MAP = {
     "Xception": 299,
     "VGG16": 224,
     "VGG19": 224,

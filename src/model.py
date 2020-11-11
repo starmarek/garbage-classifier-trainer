@@ -4,7 +4,7 @@ from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras.models import Sequential
 
 from src.utils.keras_app_importer import KerasAppImporter
-from src.utils.maps import MODEL_TO_IMAGE_SIZE_MAP
+from src.utils.maps import MODEL_STRUCTURE_TO_IMAGE_SIZE_MAP
 
 log = logging.getLogger(__name__)
 
@@ -24,16 +24,16 @@ class ConvolutionModel:
 
         log.debug(f"Creating {type(self).__name__} class with mode = `{mode}`")
 
-        self.model_structure = KerasAppImporter(model_structure).get_keras_model()
+        self.keras_model = KerasAppImporter(model_structure).get_keras_model()
         self.dense_layers_quantity = dense_layers_quantity
         self.dl_neurons_quantity = dl_neurons_quantity
-        self.image_size = MODEL_TO_IMAGE_SIZE_MAP[model_structure]
+        self.image_size = MODEL_STRUCTURE_TO_IMAGE_SIZE_MAP[model_structure]
         log.debug(f"Mapped image size = `{self.image_size}`")
         self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.model_to_recompile = model_to_recompile
         self._name = (
-            f"{self.model_structure.__name__}_"
+            f"{self.keras_model.__name__}_"
             + f"{optimizer.__name__}_"
             + f"{learning_rate}_"
             + f"{self.dense_layers_quantity}"
@@ -50,9 +50,9 @@ class ConvolutionModel:
     def build_model(self):
         log.debug(
             "Building new model with model "
-            f"structure = `{self.model_structure.__name__}`"
+            f"structure = `{self.keras_model.__name__}`"
         )
-        base_model = self.model_structure(
+        base_model = self.keras_model(
             input_shape=(self.image_size, self.image_size, 3),
             include_top=False,
             weights="imagenet",

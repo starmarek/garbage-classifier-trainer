@@ -1,24 +1,26 @@
 import importlib
 import logging
 
-from .maps import MODEL_NAME_TO_MODULE_NAME_MAP
+from .maps import MODEL_STRUCTURE_TO_MODULE_NAME_MAP
 
 log = logging.getLogger(__name__)
 
 
 class KerasAppImporter:
-    def __init__(self, app_name):
+    def __init__(self, model_structure):
         log.debug(f"Creating {type(self).__name__} class")
         try:
-            log.debug("Mapping model name to module name")
-            self.mapped_module_name = MODEL_NAME_TO_MODULE_NAME_MAP[app_name]
+            log.debug("Mapping model structure to module name")
+            self.mapped_module_name = MODEL_STRUCTURE_TO_MODULE_NAME_MAP[
+                model_structure
+            ]
         except KeyError:
             log.error(
-                f"Program do not support this model architecture: `{app_name}`. "
+                f"Program do not support this model structure: `{model_structure}`. "
                 "Check your config."
             )
             raise
-        self.app_name = app_name
+        self.model_structure = model_structure
         self.module_to_import = (
             f"tensorflow.keras.applications.{self.mapped_module_name}"
         )
@@ -38,5 +40,5 @@ class KerasAppImporter:
         return getattr(self.app, "preprocess_input")
 
     def get_keras_model(self):
-        log.debug(f"Getting keras model architecture from {self.module_to_import}")
-        return getattr(self.app, self.app_name)
+        log.debug(f"Getting keras pretrained model from {self.module_to_import}")
+        return getattr(self.app, self.model_structure)
