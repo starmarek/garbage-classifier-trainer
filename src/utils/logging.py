@@ -12,6 +12,10 @@ TF_LOGS_TO_FILTER = [
     # warning which is showing up if using Tensorboard callback
     # There is no info how to suppress it on google
     "stop (from tensorflow.python.eager.profiler)",
+    # callback which is called after the batch (presumably Tensorboard) is just slow
+    # compared to the batch duration. One option would be to increase batch_size but
+    # there would be a threat of OOM on GPU
+    "Callbacks method `on_train_batch_end` is slow compared to the batch time",
 ]
 
 
