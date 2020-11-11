@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 class Predicter:
     def __init__(self, model_to_predict_on, data):
-        log.info(f"Creating {type(self).__name__} class")
+        log.debug(f"Creating {type(self).__name__} class")
 
         self.model = model_to_predict_on
         self.data = data
@@ -32,6 +32,7 @@ class Predicter:
             "You can only predict as much files as a single "
             "batch has to offer. This is a design restriction."
         )
+        log.debug(f"Will attempt to predict {number_of_pictures_to_predict}")
 
         def generate_sublots_size():
             sqrt = math.sqrt(number_of_pictures_to_predict)
@@ -43,6 +44,7 @@ class Predicter:
                 return math.ceil(sqrt), round(sqrt)
 
         size_1, size_2 = generate_sublots_size()
+        log.debug(f"Generated subplot size = `{size_1}x{size_2}`")
         plt.figure(figsize=(15, 15))
         for (img, label) in self.data:
             batch_prediction = np.argmax(self.model.predict(img), axis=-1)
@@ -64,6 +66,7 @@ class Predicter:
         plt.show()
 
     def predict_single_file(self):
+        log.debug("Will attempt to predict a single file")
         prediction = np.argmax(self.model.predict(self.data))
         plt.figure()
         prediction_label = self.classes[prediction]
@@ -73,6 +76,6 @@ class Predicter:
         plt.show()
 
     def evaluate_model(self):
-        log.info("Starting evaluation")
+        log.debug("Starting evaluation")
         results = self.model.evaluate(self.data)
         log.info(f"test loss, test acc: {results}")

@@ -8,8 +8,9 @@ log = logging.getLogger(__name__)
 
 class KerasAppImporter:
     def __init__(self, app_name):
-        log.info(f"Creating {type(self).__name__} class")
+        log.debug(f"Creating {type(self).__name__} class")
         try:
+            log.debug("Mapping model name to module name")
             self.mapped_module_name = MODEL_NAME_TO_MODULE_NAME_MAP[app_name]
         except KeyError:
             log.error(
@@ -23,7 +24,7 @@ class KerasAppImporter:
         )
 
         try:
-            log.info(f"Importing {self.module_to_import}")
+            log.debug(f"Importing {self.module_to_import}")
             self.app = importlib.import_module(self.module_to_import)
         except ImportError:
             log.error(
@@ -33,9 +34,9 @@ class KerasAppImporter:
             raise
 
     def get_keras_preprocess_func(self):
-        log.info("Getting preprocess function")
+        log.debug(f"Getting preprocess function from {self.module_to_import}")
         return getattr(self.app, "preprocess_input")
 
     def get_keras_model(self):
-        log.info("Getting keras model architecture")
+        log.debug(f"Getting keras model architecture from {self.module_to_import}")
         return getattr(self.app, self.app_name)

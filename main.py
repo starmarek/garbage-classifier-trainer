@@ -44,9 +44,11 @@ def train(
     optimizer="Adam",
     learning_rate=1e-3,
 ):
-    log.info("Starting learn method")
+    log.info("Starting train method")
     try:
+        log.debug("Importing tensorflow.keras.optimizers")
         optimizer_lib = importlib.import_module("tensorflow.keras.optimizers")
+        log.debug(f"getattr {optimizer}")
         optimizer = getattr(optimizer_lib, optimizer)
     except AttributeError:
         log.error(
@@ -68,6 +70,7 @@ def train(
             mode=mode,
             model_to_recompile=model_to_recompile,
         )
+        log.debug("Evaluating final model name")
         model_name = (
             (
                 cnf.config.train.custom_model_name
@@ -86,11 +89,13 @@ def train(
         return trainer.train()
 
     # initial
+    log.info("Proceeding to initial training")
     model_to_recompile = train_step(
         learning_rate=learning_rate,
         number_of_epochs=cnf.config.train.initial_num_epochs,
     )
     # tune
+    log.info("Proceeding to tune training")
     train_step(
         learning_rate=1e-5,
         number_of_epochs=cnf.config.train.tune_num_epochs,
@@ -101,25 +106,31 @@ def train(
 
 def evaluate():
     log.info("Starting evaluate method")
-    imported_model = models.load_model(cnf.config.post_train.load_model_path)
+    model_load_path = cnf.config.post_train.load_model_path
+    log.debug(f"Loading model {model_load_path}")
+    imported_model = models.load_model(model_load_path)
     data = DataLoaderEvaluation().data
     Predicter(imported_model, data).evaluate_model()
 
 
 def predict_bunch(number_of_pictures_to_predict):
     log.info("Starting predict-bunch method")
-    imported_model = models.load_model(cnf.config.post_train.load_model_path)
+    model_load_path = cnf.config.post_train.load_model_path
+    log.debug(f"Loading model {model_load_path}")
+    imported_model = models.load_model(model_load_path)
     data = DataLoaderEvaluation().data
     Predicter(imported_model, data).predict_some_files(number_of_pictures_to_predict)
 
 
 def predict_single():
     log.info("Starting predict-single method")
-    imported_model = models.load_model(cnf.config.post_train.load_model_path)
+    model_load_path = cnf.config.post_train.load_model_path
+    log.debug(f"Loading model {model_load_path}")
+    imported_model = models.load_model(model_load_path)
     data = DataLoaderEvaluation(mode="single").data
     Predicter(imported_model, data).predict_single_file()
 
 
 if __name__ == "__main__":
-    log.info("Initialize trainer package")
+    log.info("Initializing trainer package")
     fire.Fire()
