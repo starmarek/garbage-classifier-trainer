@@ -1,7 +1,7 @@
 {
     "train": {
         "custom_model_name": "",
-        "initial_num_epochs": 1,
+        "initial_num_epochs": 25,
         "tune_num_epochs": 1,
         "patience": 20,
         "skip_tune": true,
@@ -10,7 +10,7 @@
         "use_model_checkpoint": false,
         "batch_size": 16,
         "images_path": "dataset/train",
-        "tweaking_loop_args": [["Xception"], ["Adam"], [1], [1024]]
+        "tweaking_loop_args": [["Xception", "ResNet50"], ["Adam"], [1], [1024]]
     },
     "post_train": {
         "classes": ["glass", "metal", "organic", "paper", "plastic"],

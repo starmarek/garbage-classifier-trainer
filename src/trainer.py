@@ -23,7 +23,7 @@ class ModelTrainer:
 
     def init_callbacks(self):
         log.debug("Initializing callbacks for keras learning")
-        if cnf.config.patience.use_model_checkpoint:
+        if cnf.config.train.use_model_checkpoint:
             log.debug("Initializing ModelCheckpoint callback")
             self.callbacks.append(
                 ModelCheckpoint(
@@ -37,7 +37,7 @@ class ModelTrainer:
                     mode="auto",
                 )
             )
-        if cnf.config.patience.use_early_stopping:
+        if cnf.config.train.use_early_stopping:
             log.debug("Initializing EarlyStopping callback")
             self.callbacks.append(
                 EarlyStopping(
@@ -47,7 +47,7 @@ class ModelTrainer:
                     mode="auto",
                 )
             )
-        if cnf.config.patience.use_tensorboard:
+        if cnf.config.train.use_tensorboard:
             log.debug("Initializing TensorBoard callback")
             self.callbacks.append(
                 TensorBoard(log_dir="logs/{}".format(self.model_name))
