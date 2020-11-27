@@ -4,6 +4,10 @@
         "initial_num_epochs": 1,
         "tune_num_epochs": 1,
         "patience": 20,
+        "skip_tune": true,
+        "use_tensorboard": true,
+        "use_early_stopping": false,
+        "use_model_checkpoint": false,
         "batch_size": 16,
         "images_path": "dataset/train",
         "tweaking_loop_args": [["Xception"], ["Adam"], [1], [1024]]

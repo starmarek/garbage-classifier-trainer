@@ -23,27 +23,35 @@ class ModelTrainer:
 
     def init_callbacks(self):
         log.debug("Initializing callbacks for keras learning")
-        log.debug("Initializing ModelCheckpoint callback")
-        self.callbacks.append(
-            ModelCheckpoint(
-                "models/"
-                + self.model_name
-                + "--{epoch:02d}--{val_loss:.2f}--{val_accuracy:.2f}.hdf5",
-                monitor="val_accuracy",
-                verbose=1,
-                save_best_only=True,
-                save_weights_only=False,
-                mode="auto",
+        if cnf.config.patience.use_model_checkpoint:
+            log.debug("Initializing ModelCheckpoint callback")
+            self.callbacks.append(
+                ModelCheckpoint(
+                    "models/"
+                    + self.model_name
+                    + "--{epoch:02d}--{val_loss:.2f}--{val_accuracy:.2f}.hdf5",
+                    monitor="val_accuracy",
+                    verbose=1,
+                    save_best_only=True,
+                    save_weights_only=False,
+                    mode="auto",
+                )
             )
-        )
-        log.debug("Initializing EarlyStopping callback")
-        self.callbacks.append(
-            EarlyStopping(
-                monitor="val_accuracy", patience=self.patience, verbose=1, mode="auto"
+        if cnf.config.patience.use_early_stopping:
+            log.debug("Initializing EarlyStopping callback")
+            self.callbacks.append(
+                EarlyStopping(
+                    monitor="val_accuracy",
+                    patience=self.patience,
+                    verbose=1,
+                    mode="auto",
+                )
             )
-        )
-        log.debug("Initializing TensorBoard callback")
-        self.callbacks.append(TensorBoard(log_dir="logs/{}".format(self.model_name)))
+        if cnf.config.patience.use_tensorboard:
+            log.debug("Initializing TensorBoard callback")
+            self.callbacks.append(
+                TensorBoard(log_dir="logs/{}".format(self.model_name))
+            )
 
     def train(self):
         use_multiprocessing = True

@@ -98,14 +98,15 @@ class CLI:
             learning_rate=learning_rate,
             number_of_epochs=cnf.config.train.initial_num_epochs,
         )
-        # tune
-        log.info("Proceeding to tune training")
-        train_step(
-            learning_rate=1e-5,
-            number_of_epochs=cnf.config.train.tune_num_epochs,
-            mode="tune",
-            model_to_recompile=model_to_recompile,
-        )
+        if not cnf.config.train.skip_tune:
+            # tune
+            log.info("Proceeding to tune training")
+            train_step(
+                learning_rate=1e-5,
+                number_of_epochs=cnf.config.train.tune_num_epochs,
+                mode="tune",
+                model_to_recompile=model_to_recompile,
+            )
 
     def evaluate(self):
         log.info("Starting evaluate method")
