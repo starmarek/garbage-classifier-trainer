@@ -1,16 +1,22 @@
 {
     "train": {
         "custom_model_name": "",
-        "initial_num_epochs": 25,
-        "tune_num_epochs": 1,
-        "patience": 20,
-        "skip_tune": true,
-        "use_tensorboard": true,
-        "use_early_stopping": false,
-        "use_model_checkpoint": false,
-        "batch_size": 16,
+        "initial_num_epochs": 50,
+        "tune_num_epochs": 100,
+        "keras_plugins": {
+            "patience": 20,
+            "use_tensorboard": true,
+            "use_early_stopping": true,
+            "use_model_checkpoint": true
+        },
+        "skip_tune": false,
+        "optimizer_additional_args": {
+            "nestrov": true,
+            "momentum": 0.9
+        },
+        "batch_size": 8,
         "images_path": "dataset/train",
-        "tweaking_loop_args": [["Xception", "ResNet50"], ["Adam"], [1], [1024]]
+        "tweaking_loop_args": [["Xception"], ["SGD"], [1], [2048]]
     },
     "post_train": {
         "classes": ["glass", "metal", "organic", "paper", "plastic"],

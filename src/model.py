@@ -3,6 +3,7 @@ import logging
 from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras.models import Sequential
 
+import src.utils.config as cnf
 from src.utils.keras_app_importer import KerasAppImporter
 from src.utils.maps import MODEL_STRUCTURE_TO_IMAGE_SIZE_MAP
 
@@ -71,6 +72,7 @@ class ConvolutionModel:
             loss="categorical_crossentropy",
             optimizer=self.optimizer(
                 learning_rate=self.learning_rate,
+                **cnf.config.train.optimizer_additional_args.toDict(),
             ),
             metrics=["accuracy"],
         )
@@ -93,6 +95,7 @@ class ConvolutionModel:
             loss="categorical_crossentropy",
             optimizer=self.optimizer(
                 learning_rate=self.learning_rate,
+                **cnf.config.train.optimizer_additional_args.toDict(),
             ),
             metrics=["accuracy"],
         )

@@ -18,12 +18,12 @@ class ModelTrainer:
         self.validation_generator = data_gens[1]
         self.num_epochs = num_epochs
         self.callbacks = []
-        self.patience = cnf.config.patience
+        self.patience = cnf.config.train.keras_plugins.patience
         self.init_callbacks()
 
     def init_callbacks(self):
         log.debug("Initializing callbacks for keras learning")
-        if cnf.config.train.use_model_checkpoint:
+        if cnf.config.train.keras_plugins.use_model_checkpoint:
             log.debug("Initializing ModelCheckpoint callback")
             self.callbacks.append(
                 ModelCheckpoint(
@@ -37,7 +37,7 @@ class ModelTrainer:
                     mode="auto",
                 )
             )
-        if cnf.config.train.use_early_stopping:
+        if cnf.config.train.keras_plugins.use_early_stopping:
             log.debug("Initializing EarlyStopping callback")
             self.callbacks.append(
                 EarlyStopping(
@@ -47,7 +47,7 @@ class ModelTrainer:
                     mode="auto",
                 )
             )
-        if cnf.config.train.use_tensorboard:
+        if cnf.config.train.keras_plugins.use_tensorboard:
             log.debug("Initializing TensorBoard callback")
             self.callbacks.append(
                 TensorBoard(log_dir="logs/{}".format(self.model_name))
